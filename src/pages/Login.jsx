@@ -1,82 +1,96 @@
 import React, { useContext, useState } from 'react'
 import { loginFields } from '../constants/loginFields'
 import { signIn } from '../api/api';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
-import { UserContext } from "../hooks/UserContext";
+import { CurrentUserContext} from '../utils/providers/CurrentUserProvider';
 import toast, { Toaster } from 'react-hot-toast';
-
+import { Card, Button, Label, TextInput } from 'flowbite-react';
+import { UserContext } from '../hooks/CurrentUserProvider';
 const fields = loginFields;
 let fieldsState = {};
 fields.forEach(field  => fieldsState[field.id] = '');
 
 const Login = () => {
-    const [ user, setUser ] = useState(fieldsState);
-    const navigate = useNavigate();
-    const {
-		updateSessionToken
-	} = useContext(UserContext);
+	const [ user, setUser ] = useState(fieldsState);
+	const navigate = useNavigate();
+	const { updateSessionToken } = useContext(CurrentUserContext)
 
-    const handleSubmit = async (e) => {
+	const handleSubmit = async (e) => { 
 		e.preventDefault();
 		signIn({
 			email: user.emailAddress,
 			password: user.password,
 		})
-        .then((res) => {
-            updateSessionToken({
-                "Authorization":  res.data.token
-            });
-            navigate("/home");
-        })
-        .catch((err) => {
-            toast.error(err.response.data.error)
-        });
+		.then((res) => {
+			updateSessionToken({
+				'Authorization':  res.data.token
+			});
+			navigate('/home');
+		})
+		.catch((err) => {
+			toast.error(err.response.data.error)
+		});
 	};
 
-    const handleChange = (e) => {
-        setUser({...user, [e.target.id] : e.target.value})
-    }
-    return (
-     <>
-        <div className="min-h-full h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 z-9">
-            <div className="relative flex flex-1 flex-col items-center justify-center pt-12 pb-16">
-                <h1 className="">Log in to your account</h1>
-                <form className="w-full max-w-sm" onSubmit={handleSubmit}>
-                    <div className="mb-6">
-                        { fields.map((field,index) =>
-                        <div key = { index }>
-                            <label htmlFor = { field.labelFor }  className="block text-sm font-semibold leading-6 text-gray-900">
-                                { field.labelText }
-                            </label>
-                            <input
-                                onChange = { handleChange }
-                                value = {user[field.id] }
-                                id = { field.id }
-                                name = { field.name }
-                                type = { field.name }
-                                className="mt-2 appearance-none text-slate-900 bg-white rounded-md block w-full px-3 h-10 shadow-sm sm:text-sm focus:outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 ring-1 ring-slate-200"
-                                placeholder = { field.placeholder }
-                            />
-                        </div>
-                        )}
-                    </div>
-                    <button type="submit" className="inline-flex bg-primary justify-center rounded-lg ring-1 text-sm font-semibold py-2.5 px-4 hover:bg-secondary w-full" onSubmit = { handleSubmit }>
-                        Login
-                    </button>
-                    <div className="pt-5 space-y-4 text-sm text-gray-900 sm:flex sm:items-center sm:justify-center sm:space-y-0 sm:space-x-4">
-                        <p className="text-center sm:text-left">Don't have an account?</p>
-                        <NavLink  to="/register"  className="inline-flex justify-center rounded-lg text-sm font-semibold py-2.5 px-4 text-slate-900 ring-1 ring-slate-900/10 hover:ring-slate-900/20">
-                            Register
-                        </NavLink>
-                    </div>
-                </form>
-            </div>
-            <Toaster position="top-center" reverseOrder = { false }/>
-        </div>
-        
-    </>
-    )
+	const handleChange = (e) => {
+		setUser({...user, [e.target.id] : e.target.value})
+	}
+	return (
+		<>
+			<div className='flex items-center justify-center px-10'>
+				<div className='relative flex flex-1 flex-col items-center justify-center'>
+				<div className='my-6 flex items-center gap-x-1'>
+						<span className='whitespace-nowrap text-2xl font-semibold'>art<span className='text-secondary-500'>connect</span></span>	
+				</div>
+				<Card 
+					horizontal
+					imgSrc='/images/login.jpg'
+					imgAlt=''
+					className='w-full lg:max-w-screen-lg md:max-w-screen-sm [&>img]:hidden md:[&>img]:w-96 md:[&>img]:p-0 md:[&>*]:w-full md:[&>*]:p-16 lg:[&>img]:block'
+				>
+					<h1 className='mb-3 text-2xl font-bold'>
+						Sign in to platform
+					</h1>
+					<form className='w-full' onSubmit={handleSubmit}>
+						{ fields.map((field,index) =>
+						<div key={index} className='mb-4 flex flex-col gap-y-3'>
+							<Label htmlFor={field.labelFor} >{field.labelText}</Label>
+							<input
+								onChange={handleChange}
+								value={user[field.id]}
+								id={field.id}
+								name={field.name}
+								type={field.type}
+								className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5'
+								placeholder={field.placeholder}
+							/>
+						</div>
+						)}
+
+						<div className='mb-6'>
+							<NavLink to='' className='w-1/2 text-right text-sm text-primary-600'>
+								Forgot Password?
+							</NavLink>
+						</div>
+						
+						<Button type='submit' className='w-full font-semibold bg-primary-950 focus:ring-transparent hover:bg-white hover:border-solid hover:border-primary-950 hover:text-black' onSubmit = { handleSubmit }>
+							Login to your account
+						</Button>
+						<p className='mt-6 text-sm text-gray-600'>
+							Not registered?&nbsp;
+							<NavLink  to='/register' className='font-semibold text-secondary-500'>
+								Create account
+							</NavLink>
+						</p>
+					</form>
+				</Card>
+				
+				</div>
+				<Toaster position='top-center' reverseOrder={false}/>
+			</div>
+		</>
+	)
     
 }
 

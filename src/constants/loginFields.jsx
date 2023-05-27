@@ -5,9 +5,8 @@ const loginFields = [
       id: "emailAddress",
       name: "email",
       type: "email",
-      autoComplete: "email",
       isRequired: true,
-      placeholder: "Email address"   
+      placeholder: "larryalcala@email.com"   
   },
   {
       labelText: "Password",
@@ -15,9 +14,8 @@ const loginFields = [
       id: "password",
       name: "password",
       type: "password",
-      autoComplete: "current-password",
       isRequired: true,
-      placeholder: "Password"   
+      placeholder: "••••••••"   
   },
 ]
 export { loginFields }

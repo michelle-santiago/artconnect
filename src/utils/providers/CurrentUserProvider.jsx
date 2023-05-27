@@ -1,7 +1,7 @@
 import React, { useState, createContext } from "react";
-export let UserContext = createContext({});
+export let CurrentUserContext = createContext({});
 
-export const UserContextProvider = ({ children }) => {
+export const CurrentUserProvider = ({ children }) => {
     const token = JSON.parse(sessionStorage.getItem("token"))
     const [ userToken, setUserToken ] =  useState(!token ? {} : token);
   
@@ -9,9 +9,8 @@ export const UserContextProvider = ({ children }) => {
 		sessionStorage.setItem("token", JSON.stringify(data));
 		setUserToken(data);
 	};
-    
     return (
-        <UserContext.Provider
+        < CurrentUserContext.Provider
             value={{
                 userToken,
                 setUserToken,
@@ -20,6 +19,6 @@ export const UserContextProvider = ({ children }) => {
             }}
         >
             { children }
-        </UserContext.Provider>
+        </ CurrentUserContext.Provider>
     );
 };

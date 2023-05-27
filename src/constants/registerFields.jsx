@@ -1,73 +1,73 @@
 const registerFields = [
   {
-    labelText: "First Name",
-    labelFor: "first-name",
-    id: "firstName",
-    name: "first-name",
-    type: "text",
-    autoComplete: "text",
+    labelText: 'First Name',
+    labelFor: 'first-name',
+    id: 'firstName',
+    name: 'firstName',
+    type: 'text',
     isRequired: true,
-    placeholder: "First Name"   
+    placeholder: 'Larry'   
   },
   {
-    labelText: "Last Name",
-    labelFor: "last-name",
-    id: "lastName",
-    name: "last-name",
-    type: "text",
-    autoComplete: "text",
+    labelText: 'Last Name',
+    labelFor: 'last-name',
+    id: 'lastName',
+    name: 'lastName',
+    type: 'text',
     isRequired: true,
-    placeholder: "Last Name"   
+    placeholder: 'Alcala'   
   },
   {
-    labelText: "Username",
-    labelFor: "username",
-    id: "userName",
-    name: "username",
-    type: "text",
-    autoComplete: "text",
+    labelText: 'Username',
+    labelFor: 'username',
+    id: 'userName',
+    name: 'userName',
+    type: 'text',
     isRequired: true,
-    placeholder: "Username"   
+    placeholder: 'larry'   
   },
   {
-      labelText: "Email Address",
-      labelFor: "email-address",
-      id: "emailAddress",
-      name: "email",
-      type: "email",
-      autoComplete: "email",
+      labelText: 'Email Address',
+      labelFor: 'email-address',
+      id: 'emailAddress',
+      name: 'emailAddress',
+      type: 'email',
       isRequired: true,
-      placeholder: "Email Address"   
+      placeholder: 'larryalcala@email.com'   
   },
   {
-      labelText: "Password",
-      labelFor: "password",
-      id: "password",
-      name: "password",
-      type: "password",
-      autoComplete: "current-password",
+      labelText: 'Password',
+      labelFor: 'password',
+      id: 'password',
+      name: 'password',
+      type: 'password',
       isRequired: true,
-      placeholder: "Password"   
+      placeholder: '••••••••'   
   },
   {
-      labelText: "Confirm Password",
-      labelFor: "password",
-      id: "confirmPassword",
-      name: "password",
-      type: "password",
-      autoComplete: "confirm-password",
+      labelText: 'Confirm Password',
+      labelFor: 'password',
+      id: 'confirmPassword',
+      name: 'confirmPassword',
+      type: 'password',
       isRequired: true,
-      placeholder: "Confirm Password"   
+      placeholder: '••••••••'   
   },
   {
-    labelText: "Role",
-    labelFor: "role",
-    id: "role",
-    name: "role",
-    type: "text",
-    autoComplete: "text",
-    isRequired: true,
-    placeholder: "Role"   
+    labelText: 'Artist',
+    labelFor: 'bordered-radio-1',
+    id: 'bordered-radio-1',
+    name: 'role',
+    type: 'radio',
+    isRequired: true 
+  },
+  {
+    labelText: 'Client',
+    labelFor: 'bordered-radio-2',
+    id: 'bordered-radio-2',
+    name: 'role',
+    type: 'radio',
+    isRequired: true 
   },
 ]
 export { registerFields }
