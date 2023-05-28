@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 import { CurrentUserContext} from '../utils/providers/CurrentUserProvider';
 import toast, { Toaster } from 'react-hot-toast';
 import { Card, Button, Label, TextInput } from 'flowbite-react';
-import { UserContext } from '../hooks/CurrentUserProvider';
+
 const fields = loginFields;
 let fieldsState = {};
 fields.forEach(field  => fieldsState[field.id] = '');
