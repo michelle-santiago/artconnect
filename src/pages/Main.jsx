@@ -1,17 +1,17 @@
-import React from 'react';
-import { Outlet, Navigate} from 'react-router-dom';
-import Navbars from '../components/Navbars';
-import { mainMenu } from '../constants/mainMenu';
+import React from "react";
+import { Outlet, Navigate} from "react-router-dom";
+import Navbars from "../components/Navbars";
+import { mainMenu } from "../constants/mainMenu";
 const Main = () => {
-  const token = sessionStorage.getItem('token')
+  const user = JSON.parse(sessionStorage.getItem("current_user"))
   const menuItems = mainMenu;
-  return token ? 
+  return user? 
   <>
     <Navbars menuItems={menuItems}/>
     <Outlet/> 
   </>
   :
-  <Navigate to='/login'/>
+  <Navigate to="/login"/>
 }
 
 export default Main;

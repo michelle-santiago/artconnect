@@ -1,21 +1,51 @@
-import React from 'react'
-import { BrowserRouter, Route,Routes } from 'react-router-dom'
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Home from './pages/Home';
-import Message from './pages/Messages/Messages';
-import Main from './pages/Main';
+import React from "react"
+import { BrowserRouter, Route,Routes } from "react-router-dom"
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import Message from "./pages/Messages/Messages";
+import DirectMessages from "./pages/Messages/DirectMessages";
+import CommissionMessages from "./pages/Messages/CommissionMessages";
+import Main from "./pages/Main";
+import Artists from "./pages/Artists";
+import Artist from "./pages/Artist/Artist";
+import Commissions from "./pages/Artist/Commissions";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import DashboardCommissions from "./pages/Dashboard/Commissions";
+import DashboardRequests from "./pages/Dashboard/Requests";
+
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-          <Route path='/login' element={<Login/>} />
-          <Route path='/register' element={<Register />} />
-        
-          <Route path='/' element={<Main />}>
-            <Route path='/home' element={<Home />} />
-            <Route path='/message' element={<Message />} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/register" element={<Register />} />
+          
+          <Route element={<Main />}>
+            <Route path="/" element={<Home />}/>
+            
+            <Route path="message"> 
+              <Route index element={<Message />} />
+              <Route path="direct" element={<DirectMessages />} />
+              <Route path="commission" element={<CommissionMessages />} />
+            </Route>
+
+            <Route path="/dashboard"> 
+              <Route index element={<Dashboard />} />
+              <Route path="commissions" element={<DashboardCommissions />} />
+              <Route path="requests" element={<DashboardRequests />} />
+            </Route>
+
+            <Route path="/artists">
+              <Route index element={<Artists />} />
+              <Route path=":username"> 
+                <Route index element={<Artist/>}/>
+                <Route path="commissions" element={<Commissions/>}/>
+              </Route>
+            </Route> 
+            <Route path="*" element={<Home/>}/>
           </Route>
+            
       </Routes>
     </BrowserRouter>
   )

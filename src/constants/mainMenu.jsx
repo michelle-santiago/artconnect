@@ -6,7 +6,12 @@ const mainMenu = [
   {
       path: '/artists',
       name: 'Artists'
+  },
+  {
+    path: '/about',
+    name: 'About'
   }
+
 ]
 
 export { mainMenu };
