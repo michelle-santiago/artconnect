@@ -7,13 +7,10 @@ import { createCommission } from '../../api/api';
 const CommissionForm = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
-
   const [showModal, setShowModal] = useState(false);
-
   const fields = commissionFields;
   let fieldsState = {};
   fields.forEach(field  => fieldsState[field.id] = "");
-  
   const [ commission, setCommission ] = useState(fieldsState);
 
 	const handleSubmit = (e) => {
@@ -46,6 +43,7 @@ const CommissionForm = () => {
 	const handleChangeImage = (e) => {
 		setCommission({...commission, [e.target.name] : e.target.files[0]})	
  }
+
   return (
     <>
       <Button
@@ -54,24 +52,21 @@ const CommissionForm = () => {
             onClick={() => setShowModal(true)}
           >Add Commission
       </Button>
-      {showModal ? (
+      {showModal &&
         <>
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-1 outline-none focus:outline-none">
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">
             <Card 
               className="w-full lg:max-w-screen-lg md:max-w-screen-sm [&>img]:hidden md:[&>img]:w-96 md:[&>img]:p-0 md:[&>*]:w-full md:[&>*]:p-16 lg:[&>img]:block"
             >
-              <h1 className="mb-3 text-2xl font-bold">
-                Create Commission
-                <button
-                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                    onClick={() => setShowModal(false)}
-                >x</button>
-              </h1>
-              
+              <button onClick={() => setShowModal(false)} className="absolute m-5 top-0 right-0 text-primary-500 hover:text-primary-950">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h1 className="text-2xl font-bold">Create Commission</h1>
               <form className="w-full" onSubmit={handleSubmit} >
-            
-                  { fields.map((field,index) =>
+                { fields.map((field,index) =>
                   <div key={index} >
                     { field.type !== "radio"?
                     <>
@@ -103,7 +98,7 @@ const CommissionForm = () => {
                     </div>
                     }
                   </div>
-                  )}
+                )}
 
                 <label className="block mb-2 mt-6 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Image</label>
                 <input
@@ -122,7 +117,7 @@ const CommissionForm = () => {
           <Toaster position="top-center" reverseOrder={false}/>
         </div>
         </>
-      ) : null}
+      }
     </>
   )
 }
