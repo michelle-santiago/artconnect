@@ -9,7 +9,6 @@ import CommissionMessages from "./pages/Messages/CommissionMessages";
 import Main from "./pages/Main";
 import Artists from "./pages/Artists";
 import Artist from "./pages/Artist/Artist";
-import Commissions from "./pages/Artist/Commissions";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import DashboardCommissions from "./pages/Dashboard/Commissions";
 import DashboardRequests from "./pages/Dashboard/Requests";
@@ -38,9 +37,8 @@ const Router = () => {
 
             <Route path="/artists">
               <Route index element={<Artists />} />
-              <Route path=":username"> 
+              <Route path=":id"> 
                 <Route index element={<Artist/>}/>
-                <Route path="commissions" element={<Commissions/>}/>
               </Route>
             </Route> 
             <Route path="*" element={<Home/>}/>
