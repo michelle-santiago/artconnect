@@ -1,5 +1,5 @@
 import axios from "axios";
-const url = "http://localhost:3000/api/v1"
+const url = "https://artconnect.onrender.com/api/v1"
 
 export const signUp = async (data) => {
     return await axios.post(`${url}/sign_up`, data , {headers: {
