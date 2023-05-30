@@ -38,7 +38,7 @@ const Router = () => {
             <Route path="/artists">
               <Route index element={<Artists />} />
               <Route path=":id"> 
-                <Route index element={<Artist/>}/>
+                <Route index element={<Artist/>}/> 
               </Route>
             </Route> 
             <Route path="*" element={<Home/>}/>

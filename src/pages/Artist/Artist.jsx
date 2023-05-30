@@ -3,15 +3,16 @@ import { useParams } from 'react-router-dom';
 import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider';
 import { getArtist, getArtistCommissions } from '../../api/api';
 import toast, { Toaster } from 'react-hot-toast';
-import { Tabs, Button } from 'flowbite-react';
+import { Tabs} from 'flowbite-react';
 import Commissions from './Commissions';
 import CommissionForm from './CommissionForm';
+import { CommissionsContext } from '../../utils/providers/CommissionsProvider';
 const Artists = () => {
   const { id } = useParams();
   const { currentUser } = useContext(CurrentUserContext)
-  const [artist, setArtist] = useState({})
-  const [commissions, setCommissions] = useState([])
   const user = { currentUser }
+  const [artist, setArtist] = useState({})
+  const { setCommissions } = useContext(CommissionsContext)
 
 	useEffect(() => {
     getArtist(
@@ -68,8 +69,10 @@ const Artists = () => {
           </div>
         </Tabs.Item>
         <Tabs.Item title="Commissions">
-          {artist.id === user.currentUser.id &&<CommissionForm/>}
-          <Commissions commissions={commissions}/>
+          
+          {artist.id === user.currentUser.id &&<CommissionForm action="add"/>}
+          <Commissions artistId={artist.id}/>
+          
         </Tabs.Item>
         <Tabs.Item title="Terms and Agreement" >
           <div>

@@ -25,3 +25,7 @@ export const getArtistCommissions = async (token, id) => {
 export const createCommission = async (headers, data) => {
   return await axios.post(`${url}/commissions`, data , {headers: headers})
 }
+
+export const updateCommission = async (headers, data) => {
+  return await axios.patch(`${url}/commissions/${data.id}`, data , {headers: headers})
+}
