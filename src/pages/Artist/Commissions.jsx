@@ -23,7 +23,7 @@ const Commissions = ({commissions}) => {
             </svg>
           </button>
           { commission.image_url !== null? 
-            <div className={`bg-cover bg-center bg-no-repeat bg-[url("${commission.image_url}")] bg-gray-300`}>
+            <div className={`bg-cover bg-center bg-no-repeat bg-gray-300`} style={{ backgroundImage: `url(${commission.image_url})`}}>
               <div className="px-4 mx-auto max-w-screen-xl py-24 lg:py-40 text-transparent hover:text-white">
               </div>
             </div>
