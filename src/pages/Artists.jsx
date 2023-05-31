@@ -4,6 +4,7 @@ import { getArtists } from '../api/api'
 import toast, { Toaster } from 'react-hot-toast'
 import { Card } from 'flowbite-react'
 import { NavLink } from 'react-router-dom'
+import { LazyLoadComponent } from 'react-lazy-load-image-component'
 const Artists = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const [artists, setArtists] = useState([])
@@ -18,6 +19,7 @@ const Artists = () => {
 		.catch((err) => {
 			toast.error(err.response.data.error)
 		});
+    console.log(artists)
 	}, []);
 
   return (
@@ -37,7 +39,9 @@ const Artists = () => {
                     <svg className="absolute w-24 h-24 text-primary-500 -left-.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
                   </div>
                   :
-                  <img src={artist.avatar_url} className="w-24 h-24 mb-3 rounded-full shadow-lg"/>
+                  <LazyLoadComponent>
+                    <img src={artist.avatar_url} className="w-24 h-24 mb-3 rounded-full shadow-lg"/>
+                  </LazyLoadComponent>
                 }
                 <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{artist.first_name} {artist.last_name}</h5>
                 <span className="text-sm text-gray-500">{artist.email}</span>

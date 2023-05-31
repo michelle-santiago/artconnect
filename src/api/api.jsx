@@ -1,5 +1,5 @@
 import axios from "axios";
-const url = "https://artconnect.onrender.com/api/v1"
+const url = "http://localhost:3000/api/v1"
 
 export const signUp = async (data) => {
     return await axios.post(`${url}/sign_up`, data , {headers: {
@@ -29,3 +29,24 @@ export const createCommission = async (headers, data) => {
 export const updateCommission = async (headers, data) => {
   return await axios.patch(`${url}/commissions/${data.id}`, data , {headers: headers})
 }
+
+export const createRequest = async (headers, data) => {
+  return await axios.post(`${url}/requests`, data , { headers: headers })
+}
+
+export const getRequests = async (token) => {
+  return await axios.get(`${url}/requests`, { headers: token })
+}
+
+export const updateRequest = async (token, data) => {
+  return await axios.patch(`${url}/requests/${data.request_id}?status=${data.status}`, data, { headers: token })
+}
+
+export const updatePayment = async (token, data) => {
+  return await axios.patch(`${url}/requests/${data.request_id}/paid`, data, { headers: token })
+}
+
+export const cancelRequest = async (token,data) => {
+  return await axios.patch(`${url}/requests/${data.request_id}/cancelled/edit`, data, { headers: token })
+}
+

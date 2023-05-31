@@ -5,8 +5,9 @@ import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider'
 import CommissionForm from './CommissionForm'
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
 import { LazyLoadComponent} from 'react-lazy-load-image-component'
-const Commissions = (props) => {
-  const artistId = props.artistId
+import { createRequest } from '../../api/api'
+import toast, { Toaster } from 'react-hot-toast'
+const Commissions = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const [showModal, setShowModal] = useState(false);
@@ -17,6 +18,29 @@ const Commissions = (props) => {
     setShowModal(true)
     setImage(image)
   })
+
+  const handleRequest = (commission) => {
+    createRequest(
+      {
+        "Authorization" : user.currentUser.token,
+        "Content-Type" : "multipart/form-data"
+      },
+      {
+        kind: commission.kind,
+        price: commission.price,
+        duration: commission.duration,
+        image_url: commission.image_url,
+        artist_id: commission.artist_id
+      }).then(res => {
+          toast.success("Requested Successfully")				
+        }).catch(err => {
+        let errors = err.response.data.errors
+        if(errors.length > 1) {
+          errors = errors.join("\n")	
+        }
+        toast.error(errors)
+      })
+  } 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
@@ -52,13 +76,13 @@ const Commissions = (props) => {
             <span className="text-lg p-2">Duration: {commission.duration} days</span>
             <span className="font-bold text-lg p-2">${commission.price}</span>
           </div>
-          { artistId === user.currentUser.id ? 
+          { commission.artist_id === user.currentUser.id ? 
             <CommissionForm action="update" commission={commission}/> 
           : 
-            <NavLink className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white bg-primary-950 hover:text-primary-950 hover:bg-gray-200 focus:ring-4 focus:ring-gray-100" to={""}>
+            <button onClick={() => handleRequest(commission)} className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white bg-primary-950 hover:text-primary-950 hover:bg-gray-200 focus:ring-4 focus:ring-gray-100">
               Request
               <svg aria-hidden="true" className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-            </NavLink> 
+            </button> 
           }
           { showModal? 
               <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -79,6 +103,7 @@ const Commissions = (props) => {
         </div> 
       )
     })}
+    <Toaster position="top-center" reverseOrder={false}/>
     </div>
   )
 }

@@ -72,7 +72,6 @@ const CommissionForm = (props) => {
           toast.success("Commission Updated Successfully")				
           const newCommissions = commissions.map(data => {
             if (data.id === commissionData.id) {
-              console.log(commission)
               return commission
             }
             return data;

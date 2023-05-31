@@ -7,8 +7,13 @@ const Main = () => {
   const menuItems = mainMenu;
   return user? 
   <>
-    <Navbars menuItems={menuItems}/>
-    <Outlet/> 
+    <div className="fixed top-0 z-50 w-full">
+      <Navbars menuItems={menuItems}/>
+    </div>
+    <div className="pt-20"> 
+      <Outlet/> 
+    </div>
+
   </>
   :
   <Navigate to="/login"/>

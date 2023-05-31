@@ -71,7 +71,7 @@ const Artists = () => {
         <Tabs.Item title="Commissions">
           
           {artist.id === user.currentUser.id &&<CommissionForm action="add"/>}
-          <Commissions artistId={artist.id}/>
+          <Commissions/>
           
         </Tabs.Item>
         <Tabs.Item title="Terms and Agreement" >

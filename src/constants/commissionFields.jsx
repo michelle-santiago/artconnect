@@ -18,7 +18,7 @@ const commissionFields = [
     placeholder: '10'   
   },
   {
-    labelText: 'Duration',
+    labelText: 'Duration(days)',
     labelFor: 'duration',
     id: 'duration',
     name: 'duration',

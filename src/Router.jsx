@@ -29,10 +29,9 @@ const Router = () => {
               <Route path="commission" element={<CommissionMessages />} />
             </Route>
 
-            <Route path="/dashboard"> 
-              <Route index element={<Dashboard />} />
-              <Route path="commissions" element={<DashboardCommissions />} />
-              <Route path="requests" element={<DashboardRequests />} />
+            <Route path="dashboard" element={<Dashboard />}> 
+                <Route path="commissions" element={<DashboardCommissions />} />
+                <Route path="requests" element={<DashboardRequests />} />
             </Route>
 
             <Route path="/artists">

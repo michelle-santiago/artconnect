@@ -1,9 +1,9 @@
 import {React, useContext} from "react"
 import { Navbar, Dropdown} from "flowbite-react"
 import { NavLink } from "react-router-dom"
-
 import { useNavigate } from "react-router-dom"
 import { CurrentUserContext } from "../utils/providers/CurrentUserProvider"
+
 const Navbars = ({menuItems}) => {
   const { currentUser } = useContext(CurrentUserContext)
   const menus = menuItems
@@ -16,7 +16,7 @@ const Navbars = ({menuItems}) => {
   };
 
   return (
-  <Navbar fluid rounded>
+  <Navbar fluid rounded >
     <Navbar.Toggle />
 
     <Navbar.Brand href="">
@@ -43,7 +43,9 @@ const Navbars = ({menuItems}) => {
             {currentUser.email}
           </span>
         </Dropdown.Header>
-        <Dropdown.Item>Dashboard</Dropdown.Item>
+        <Dropdown.Item>
+          <NavLink to={"/dashboard"}>Dashboard</NavLink>
+        </Dropdown.Item>
         <Dropdown.Item>Messages</Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
