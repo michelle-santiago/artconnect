@@ -11,7 +11,7 @@ const Commissions = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const [showModal, setShowModal] = useState(false);
- 
+  const [image, setImage] = useState(""); 
   const { commissions } = useContext(CommissionsContext)
 
   const zoomImage = ((image)=>{
