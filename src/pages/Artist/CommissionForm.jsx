@@ -9,6 +9,7 @@ import { CommissionsContext } from '../../utils/providers/CommissionsProvider';
 const CommissionForm = (props) => {
   const action = props.action
   const commissionData = props.commission
+  const location = props.location
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const fields = commissionFields;
@@ -95,7 +96,7 @@ const CommissionForm = (props) => {
 
   return (
     <>
-      {action === "add" ? 
+      { action === "add" ? 
         <Button
           className="mt-2 mb-2 text-xl font-semibold bg-primary-950 focus:ring-transparent hover:bg-white hover:border-solid hover:border-primary-950 hover:text-black"
           type="button"
@@ -104,16 +105,19 @@ const CommissionForm = (props) => {
           Add Commission
         </Button>
       : 
-        <button
-          className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white bg-primary-950 hover:text-primary-950 hover:bg-gray-200 focus:ring-4 focus:ring-gray-100"
-          type="button"
-          onClick={() => setShowModal(true)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-          Update
-        </button>
+        location === "dashboard" ?
+          <Button onClick={() => setShowModal(true)}>Update</Button>
+        :
+          <button
+            className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white bg-primary-950 hover:text-primary-950 hover:bg-gray-200 focus:ring-4 focus:ring-gray-100"
+            type="button"
+            onClick={() => setShowModal(true)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+            Update
+          </button>
       }    
-      {showModal &&
+      { showModal &&
         <>
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">

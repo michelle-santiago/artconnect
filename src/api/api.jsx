@@ -50,3 +50,22 @@ export const cancelRequest = async (token,data) => {
   return await axios.patch(`${url}/requests/${data.request_id}/cancelled/edit`, data, { headers: token })
 }
 
+export const getCommissions = async (token) => {
+  return await axios.get(`${url}/commissions/`, { headers: token })
+}
+
+export const updateCommissionStatus = async (token, data) => {
+  return await axios.patch(`${url}/commissions/${data.commission_id}/complete_status`, data, { headers: token })
+}
+
+export const createCommissionProcess = async (headers, data) => {
+  return await axios.patch(`${url}/commissions/${data.commission_id}/add_process`, data , {headers: headers})
+}
+
+export const updateCommissionProcess = async (headers, data) => {
+  return await axios.patch(`${url}/commissions/${data.commission_id}/update_process`, data , {headers: headers})
+}
+
+export const updateProcessStatus = async (token, data) => {
+  return await axios.patch(`${url}/commissions/${data.commission_id}/complete_process`, data, { headers: token })
+}

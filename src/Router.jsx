@@ -10,8 +10,9 @@ import Main from "./pages/Main";
 import Artists from "./pages/Artists";
 import Artist from "./pages/Artist/Artist";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import DashboardCommissions from "./pages/Dashboard/Commissions";
 import DashboardRequests from "./pages/Dashboard/Requests";
+import DashboardCommissions from "./pages/Dashboard/Commissions";
+import DashboardProcess  from "./pages/Dashboard/CommissionProcess";
 
 const Router = () => {
   return (
@@ -30,8 +31,10 @@ const Router = () => {
             </Route>
 
             <Route path="dashboard" element={<Dashboard />}> 
-                <Route path="commissions" element={<DashboardCommissions />} />
                 <Route path="requests" element={<DashboardRequests />} />
+                <Route path="commissions" element={<DashboardCommissions />}/>
+                <Route path="process" element={<DashboardProcess />} />
+
             </Route>
 
             <Route path="/artists">

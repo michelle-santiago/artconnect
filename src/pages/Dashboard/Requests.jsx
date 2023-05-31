@@ -149,14 +149,14 @@ const Requests = () => {
       <table className="min-w-full bg-white divide-y divide-gray-200">
         <thead className="bg-gray-100">
             <tr className="text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                <th scope="col" className="p-2">#</th>
-                <th scope="col" className="p-2">Thumbnail</th>
-                <th scope="col" className="p-2">Kind</th>
-                <th scope="col" className="p-2">Price</th>
-                <th scope="col" className="p-2">Duration</th>
-                <th scope="col" className="p-2">Payment Status</th>
-                <th scope="col" className="p-2">Status</th>
-                <th scope="col" className="p-2">Action</th>
+              <th scope="col" className="p-2">#</th>
+              <th scope="col" className="p-2">Thumbnail</th>
+              <th scope="col" className="p-2">Kind</th>
+              <th scope="col" className="p-2">Price</th>
+              <th scope="col" className="p-2">Duration</th>
+              <th scope="col" className="p-2">Payment Status</th>
+              <th scope="col" className="p-2">Status</th>
+              <th scope="col" className="p-2">Action</th>
             </tr>
         </thead>
         <tbody className="mx-2 my-2">

@@ -11,7 +11,7 @@ const Commissions = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const [showModal, setShowModal] = useState(false);
-  const [image, setImage] = useState("");
+ 
   const { commissions } = useContext(CommissionsContext)
 
   const zoomImage = ((image)=>{
@@ -19,7 +19,7 @@ const Commissions = () => {
     setImage(image)
   })
 
-  const handleRequest = (commission) => {
+  const handleRequest = (commission) =>{
     createRequest(
       {
         "Authorization" : user.currentUser.token,

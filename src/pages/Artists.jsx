@@ -19,7 +19,6 @@ const Artists = () => {
 		.catch((err) => {
 			toast.error(err.response.data.error)
 		});
-    console.log(artists)
 	}, []);
 
   return (
