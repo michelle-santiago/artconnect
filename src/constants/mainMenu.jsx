@@ -8,8 +8,8 @@ const mainMenu = [
       name: 'Artists'
   },
   {
-    path: '/about',
-    name: 'About'
+    path: '/artworks',
+    name: 'Artworks'
   }
 
 ]

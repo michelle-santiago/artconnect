@@ -13,7 +13,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import DashboardRequests from "./pages/Dashboard/Requests";
 import DashboardCommissions from "./pages/Dashboard/Commissions";
 import DashboardProcess  from "./pages/Dashboard/CommissionProcess";
-
+import Artworks from "./pages/Artworks";
 const Router = () => {
   return (
     <BrowserRouter>
@@ -23,7 +23,7 @@ const Router = () => {
           
           <Route element={<Main />}>
             <Route path="/" element={<Home />}/>
-            
+            <Route path="/artworks" element={<Artworks />} />
             <Route path="message"> 
               <Route index element={<Message />} />
               <Route path="direct" element={<DirectMessages />} />
