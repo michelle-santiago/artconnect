@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider';
 import { Button, Label, Card } from 'flowbite-react'
 import { commissionFields } from '../../constants/commissionFields';
@@ -18,9 +18,11 @@ const CommissionForm = (props) => {
   const [ commission, setCommission ] = useState(fieldsState);
   const {commissions, setCommissions} = useContext(CommissionsContext)
   const [showModal, setShowModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState("")
 
   useEffect(()=>{
     if (action === "update"){
+      setImageUrl(commissionData.image_url)
       setCommission(commissionData)
     }
   },[])
@@ -34,6 +36,17 @@ const CommissionForm = (props) => {
     }
 	}
 
+  const resetForm = () =>{
+    if(action === "update"){
+      setImageUrl(commissionData.image_url)
+      setCommission(commissionData)
+    }else{
+      setImageUrl("")
+      setCommission(fieldsState)
+    }
+    setShowModal(false)
+  }
+  
   const addCommission = () =>{
     createCommission(
       {
@@ -47,7 +60,8 @@ const CommissionForm = (props) => {
         image: commission.image
       }).then(res => {
           toast.success("Commission Added Successfully")	
-          const newCommission = res.data			
+          const newCommission = res.data	
+          resetForm()
           setCommissions(prevState => [...prevState,  newCommission])	
         }).catch(err => {
         let errors = err.response.data.errors
@@ -79,8 +93,9 @@ const CommissionForm = (props) => {
             }
             return data;
           });
+          resetForm()
           setCommissions(newCommissions);
-        }).catch(err => {
+      }).catch(err => {
         let errors = err.response.data.errors
         if(errors.length > 1) {
           errors = errors.join("\n")	
@@ -93,6 +108,11 @@ const CommissionForm = (props) => {
 	}
 
 	const handleChangeImage = (e) => {
+    const reader =  new FileReader();
+    reader.onload =function() { 
+      setImageUrl(reader.result)
+    }
+    reader.readAsDataURL(e.target.files[0]);
 		setCommission({...commission, [e.target.name] : e.target.files[0]})	
  }
 
@@ -135,45 +155,35 @@ const CommissionForm = (props) => {
               <form className="w-full" onSubmit={handleSubmit} >
                 { fields.map((field,index) =>
                   <div key={index} >
-                    { field.type !== "radio"?
-                    <>
-                      <Label htmlFor={field.labelFor}>
-                        {field.labelText}
-                      </Label>
-                      <input
-                        onChange={handleChange}
-                        value={commission[field.id]}
-                        id={field.id}
-                        name={field.name}
-                        type={field.type}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5"
-                        placeholder={field.placeholder}
-                      />
-                    </>
-                    :
-                    <div className="flex items-center pl-4 border border-gray-200 rounded-lg">
-                      <input
-                        onChange={handleChange}
-                        value={field.labelText.toLowerCase()}
-                        id={field.id}
-                        name={field.name}
-                        type={field.type}
-                        className="w-4 h-4 text-primary-950 bg-gray-100 border-gray-300 focus:ring-0"
-                        placeholder={field.placeholder}
-                      />
-                      <label htmlFor={field.labelFor} className="w-full py-4 ml-2 text-sm font-medium text-gray-900">{field.labelText}</label>
-                    </div>
-                    }
+                    <Label htmlFor={field.labelFor}>
+                      {field.labelText}
+                    </Label>
+                    <input
+                      onChange={handleChange}
+                      value={commission[field.id]}
+                      id={field.id}
+                      name={field.name}
+                      type={field.type}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5"
+                      placeholder={field.placeholder}
+                    />
                   </div>
                 )}
-
-                <label className="block mb-2 mt-6 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Image</label>
+                <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="file_input">Image</label>
                 <input
                   onChange={handleChangeImage}
                   name="image"
                   type="file"
+                  accept=".png, .jpg, .jpeg, .gif"
                   className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
                 />    
+                <div className="flex flex-col items-center justify-center mt-2 mx-20">
+                  <span className="block mb-2 text-sm  font-medium text-gray-900">Preview</span>
+                  <div className={`h-24 w-full bg-cover bg-center bg-no-repeat bg-gray-300`} style={{ backgroundImage: `url(${imageUrl})`}}>
+                    <div className="px-4 mx-auto max-w-screen-xl py-24 lg:py-40 text-transparent hover:text-white">
+                    </div>
+                  </div>
+                </div>
                 <Button type="submit" className="w-full mt-6 text-xl font-semibold bg-primary-950 focus:ring-transparent hover:bg-white hover:border-solid hover:border-primary-950 hover:text-black" onSubmit={handleSubmit}>
                   Submit
                 </Button>
