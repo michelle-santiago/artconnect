@@ -46,8 +46,9 @@ const CommissionForm = (props) => {
         duration: commission.duration,
         image: commission.image
       }).then(res => {
-          toast.success("Commission Added Successfully")				
-          setCommissions(prevState => [...prevState,  commission])	
+          toast.success("Commission Added Successfully")	
+          const newCommission = res.data			
+          setCommissions(prevState => [...prevState,  newCommission])	
         }).catch(err => {
         let errors = err.response.data.errors
         if(errors.length > 1) {
@@ -70,10 +71,11 @@ const CommissionForm = (props) => {
         duration: commission.duration,
         image: commission.image
       }).then(res => {
-          toast.success("Commission Updated Successfully")				
+          toast.success("Commission Updated Successfully")	
+          const updatedCommission = res.data
           const newCommissions = commissions.map(data => {
-            if (data.id === commissionData.id) {
-              return commission
+            if (data.id === updatedCommission.id) {
+              return updatedCommission
             }
             return data;
           });
