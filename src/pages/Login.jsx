@@ -25,7 +25,7 @@ const Login = () => {
 		.then((res) => {
 			updateUserProfile(res.data);
 
-			navigate("/home");
+			navigate("/");
 		})
 		.catch((err) => {
 			toast.error(err.response.data.error)
@@ -37,6 +37,7 @@ const Login = () => {
 	}
 	return (
 		<>
+
 			<Header/>
 			<div className="flex items-center justify-center px-10">
 				<div className="relative flex flex-1 flex-col items-center justify-center">
@@ -86,6 +87,7 @@ const Login = () => {
 				</div>
 				<Toaster position="top-center" reverseOrder={false}/>
 			</div>
+			
 		</>
 	)
     

@@ -1,19 +1,22 @@
 import React from "react"
 import { BrowserRouter, Route,Routes } from "react-router-dom"
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import Message from "./pages/Messages/Messages";
-import DirectMessages from "./pages/Messages/DirectMessages";
-import CommissionMessages from "./pages/Messages/CommissionMessages";
-import Main from "./pages/Main";
-import Artists from "./pages/Artists";
-import Artist from "./pages/Artist/Artist";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import DashboardRequests from "./pages/Dashboard/Requests";
-import DashboardCommissions from "./pages/Dashboard/Commissions";
-import DashboardProcess  from "./pages/Dashboard/CommissionProcess";
-import Artworks from "./pages/Artworks";
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+import Home from "./pages/Home"
+import Message from "./pages/Messages/Messages"
+import DirectMessages from "./pages/Messages/DirectMessages"
+import CommissionMessages from "./pages/Messages/CommissionMessages"
+import Main from "./pages/Main"
+import Artists from "./pages/Artists"
+import ArtistHome from "./pages/Artist/Home"
+import ArtistCommissions from "./pages/Artist/Commissions"
+import ArtistArtworks from "./pages/Artist/Artworks"
+import ArtistAbout from "./pages/Artist/About"
+import ArtistTerms from "./pages/Artist/Terms"
+import Dashboard from "./pages/Dashboard/Dashboard"
+import DashboardRequests from "./pages/Dashboard/Requests"
+import DashboardCommissions from "./pages/Dashboard/Commissions"
+import DashboardProcess  from "./pages/Dashboard/CommissionProcess"
 const Router = () => {
   return (
     <BrowserRouter>
@@ -23,7 +26,6 @@ const Router = () => {
           
           <Route element={<Main />}>
             <Route path="/" element={<Home />}/>
-            <Route path="/artworks" element={<Artworks />} />
             <Route path="message"> 
               <Route index element={<Message />} />
               <Route path="direct" element={<DirectMessages />} />
@@ -37,12 +39,14 @@ const Router = () => {
 
             </Route>
 
-            <Route path="/artists">
-              <Route index element={<Artists />} />
-              <Route path=":id"> 
-                <Route index element={<Artist/>}/> 
-              </Route>
-            </Route> 
+            <Route path="/artists" element={<Artists />} />
+            <Route path=":username">
+              <Route index element={<ArtistHome />}/>
+              <Route path="commissions" element={<ArtistCommissions />} /> 
+              <Route path="artworks" element={<ArtistArtworks />} /> 
+              <Route path="about" element={<ArtistAbout />} /> 
+              <Route path="terms" element={<ArtistTerms />} /> 
+            </Route>
             <Route path="*" element={<Home/>}/>
           </Route>
             

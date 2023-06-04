@@ -126,9 +126,7 @@ const Commissions = () => {
               { showModal? 
               <div className="fixed w-full h-full top-0 left-0 flex items-center justify-center inset-0 z-50 outline-none focus:outline-none">
               <div className="absolute w-full h-full ">
-              <Card 
-                className="w-full shadow-none"
-              >
+              <Card className="w-full shadow-none">
                 <button onClick={() => setShowModal(false)} className="absolute m-3 top-0 right-0 text-primary-500 hover:text-primary-950">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

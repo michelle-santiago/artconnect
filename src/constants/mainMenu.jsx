@@ -1,15 +1,11 @@
 const mainMenu = [
   {
-      path: '/home',
+      path: '/',
       name: 'Home'
   },
   {
       path: '/artists',
       name: 'Artists'
-  },
-  {
-    path: '/artworks',
-    name: 'Artworks'
   }
 
 ]

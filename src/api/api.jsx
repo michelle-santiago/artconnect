@@ -1,5 +1,5 @@
 import axios from "axios";
-const url = "https://artconnect.onrender.com/api/v1"
+const url = "http://localhost:3000/api/v1"
 
 export const signUp = async (data) => {
     return await axios.post(`${url}/sign_up`, data , {headers: {
@@ -14,8 +14,8 @@ export const getArtists = async (token) => {
   return await axios.get(`${url}/artists`, { headers: token })
 }
 
-export const getArtist = async (token, id) => {
-  return await axios.get(`${url}/artists/${id}`, { headers: token })
+export const getArtist = async (token, username) => {
+  return await axios.get(`${url}/artists/${username}`, { headers: token })
 }
 
 export const getArtistCommissions = async (token, id) => {
