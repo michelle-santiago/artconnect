@@ -18,6 +18,14 @@ export const getArtist = async (token, username) => {
   return await axios.get(`${url}/artists/${username}`, { headers: token })
 }
 
+export const updateAbout = async (token, data) => {
+  return await axios.patch(`${url}/about`, data, { headers: token })
+}
+
+export const updateTerms = async (token, data) => {
+  return await axios.patch(`${url}/terms`, data, { headers: token })
+}
+
 export const getArtistCommissions = async (token, id) => {
   return await axios.get(`${url}/commissions/${id}`, { headers: token })
 }
@@ -69,3 +77,4 @@ export const updateCommissionProcess = async (headers, data) => {
 export const updateProcessStatus = async (token, data) => {
   return await axios.patch(`${url}/commissions/${data.commission_id}/complete_process`, data, { headers: token })
 }
+
