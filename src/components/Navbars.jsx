@@ -49,6 +49,11 @@ const Navbars = ({category}) => {
             <Dropdown.Item>
               <NavLink to={"/dashboard"}>Dashboard</NavLink>
             </Dropdown.Item>
+            {currentUser.role === "artist" &&
+              <Dropdown.Item>
+                <NavLink to={`/${currentUser.username}`}>Manage My Page</NavLink>
+              </Dropdown.Item>
+            }
             <Dropdown.Item>Messages</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>

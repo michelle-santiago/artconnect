@@ -6,7 +6,7 @@ import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
 import { LazyLoadComponent} from 'react-lazy-load-image-component'
 import { createRequest } from '../../api/api'
 import toast, { Toaster } from 'react-hot-toast'
-import { getArtistCommissions } from '../../api/api';
+import { getArtistCommissions, getCommissions } from '../../api/api';
 import Navbars from '../../components/Navbars';
 import { getArtist } from '../../api/api'
 import { useParams } from 'react-router-dom'
@@ -19,12 +19,24 @@ const Commissions = () => {
   const [showModal, setShowModal] = useState(false);
   const [image, setImage] = useState(""); 
   const { commissions, setCommissions, artistInfo, setArtistInfo } = useContext(CommissionsContext)
-  
+  const [slotsTaken, setSlotsTaken] = useState("0")
 	useEffect(() => {
     getArtist(
       {"Authorization" : user.currentUser.token}, username
     ).then((res) => {
       setArtistInfo(res.data)
+		})
+		.catch((err) => {
+      console.log(err)
+			toast.error(err.response.data.error)
+		});
+
+    getCommissions(
+      {"Authorization" : user.currentUser.token}
+    ).then((res) => {
+      const commissions = res.data
+      const newCommissions = commissions.filter(commission => commission.status === "in progress")
+      setSlotsTaken(newCommissions.length)
 		})
 		.catch((err) => {
       console.log(err)
@@ -51,7 +63,10 @@ const Commissions = () => {
   })
 
   const handleRequest = (commission) =>{
-    createRequest(
+    if( slotsTaken >= artistInfo.max_slot){
+      toast.error("Sorry commission slot already full, you can message me for inquiry")
+    }else{
+      createRequest(
       {
         "Authorization" : user.currentUser.token,
         "Content-Type" : "multipart/form-data"
@@ -72,6 +87,8 @@ const Commissions = () => {
         }
         toast.error(errors)
       })
+    }
+
   } 
 
   return (
@@ -124,7 +141,7 @@ const Commissions = () => {
               </button>
             }
             { showModal? 
-                <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                 <div className="relative w-auto my-6 mx-auto max-w-3xl">
                 <Card className="w-full shadow-none lg:max-w-screen-lg md:max-w-screen-sm">
                   <button onClick={() => setShowModal(false)} className="absolute m-3 top-0 right-0 text-primary-500 hover:text-primary-950">

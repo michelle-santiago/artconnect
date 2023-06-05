@@ -84,8 +84,7 @@ const Requests = () => {
         client_id: requestData.client_id,
         status: action,
         phase: "sketch",
-        p_status: "pending",
-        c_status: "in progress"
+        p_status: "pending"
       }).then(res => {
           toast.success("Request Updated Successfully")				
           const newRequests = requests.map(data => {

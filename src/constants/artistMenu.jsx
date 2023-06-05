@@ -7,10 +7,11 @@ const artistMenu = [
     path: '/commissions',
     name: 'Commissions'
   },
-  {
-    path: '/artworks',
-    name: 'Artworks'
-  },
+  //for future feature
+  // {
+  //   path: '/artworks',
+  //   name: 'Artworks'
+  // },
   {
     path: '/about',
     name: 'About'

@@ -43,13 +43,13 @@ const Router = () => {
             <Route path=":username">
               <Route index element={<ArtistHome />}/>
               <Route path="commissions" element={<ArtistCommissions />} /> 
-              <Route path="artworks" element={<ArtistArtworks />} /> 
+              {/* for future feature */}
+              {/* <Route path="artworks" element={<ArtistArtworks />} />  */}
               <Route path="about" element={<ArtistAbout />} /> 
               <Route path="terms" element={<ArtistTerms />} /> 
             </Route>
             <Route path="*" element={<Home/>}/>
           </Route>
-            
       </Routes>
     </BrowserRouter>
   )

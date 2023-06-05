@@ -55,8 +55,8 @@ const Terms = () => {
         { artist.id === user.currentUser.id ?
           <>
             <Button 
-            className="mt-2 mb-2 text-xl font-semibold bg-primary-950 focus:ring-transparent hover:bg-white hover:border-solid hover:border-primary-950 hover:text-black"
-            onClick={() => handleUpdate()}
+              className="mt-2 mb-2 text-xl font-semibold bg-primary-950 focus:ring-transparent hover:bg-white hover:border-solid hover:border-primary-950 hover:text-black"
+              onClick={() => handleUpdate()}
             >
               Save
             </Button>

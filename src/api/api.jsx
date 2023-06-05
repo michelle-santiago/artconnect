@@ -26,6 +26,11 @@ export const updateTerms = async (token, data) => {
   return await axios.patch(`${url}/terms`, data, { headers: token })
 }
 
+export const updateMaxSlot = async (token, data) => {
+  return await axios.patch(`${url}/max_slot`, data, { headers: token })
+}
+
+
 export const getArtistCommissions = async (token, id) => {
   return await axios.get(`${url}/commissions/${id}`, { headers: token })
 }
