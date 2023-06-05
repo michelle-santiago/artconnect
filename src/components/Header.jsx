@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <Navbar fluid rounded>
       <Navbar.Brand href="" className="">
-        <span className="self-center whitespace-nowrap text-3xl font-semibold tracking-widest">art<span className="text-secondary-400">connect</span></span>	
+        <span className="block text-primary-950 px-2 font-bold tracking-wider text-2xl font-serif">artconnect</span>	
       </Navbar.Brand>
       <div className="flex md:order-2 gap-2">
           <NavLink className="block text-primary-950 text-sm px-4 py-2 font-bold font-sans" to='/login'>
