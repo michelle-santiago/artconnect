@@ -1,5 +1,5 @@
 
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState} from "react"
 
 // import { createConsumer } from "../websocket/websocket";
 const ws = new WebSocket("ws://localhost:3000/cable");
