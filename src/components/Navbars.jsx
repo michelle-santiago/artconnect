@@ -18,7 +18,7 @@ const Navbars = ({category}) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    sessionStorage.removeItem("current_user");
+    sessionStorage.clear() 
     navigate("/login");
   };
 

@@ -4,7 +4,8 @@ export let CommissionsContext = createContext({});
 export const CommissionsProvider = ({ children }) => {
     const [ commissions, setCommissions ] =  useState([]);
     const [ artistInfo, setArtistInfo] = useState([])
-    
+    const commissionData = JSON.parse(sessionStorage.getItem("commission"))
+    const [ commission, setCommission ] =  useState(!commissionData ? [] : commissionData);
     //note update later
     // const [ processes, setProcesses ] =  useState([]);
     
@@ -13,6 +14,8 @@ export const CommissionsProvider = ({ children }) => {
             value={{
                 commissions,
                 setCommissions,
+                commission,
+                setCommission,
                 artistInfo,
                 setArtistInfo
                 // processes,

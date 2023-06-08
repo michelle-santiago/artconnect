@@ -7,12 +7,15 @@ import { LazyLoadComponent } from 'react-lazy-load-image-component'
 import { updateRequest } from '../../api/api'
 import { updatePayment } from '../../api/api'
 import { cancelRequest } from '../../api/api'
+import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
+import { NavLink } from 'react-router-dom'
 const Requests = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const [requests, setRequests] = useState([])
   const [allRequests, setAllRequests] = useState([])
   const [action, setAction] = useState("approved")
   const user = { currentUser }
+  const { commission, setCommission } = useContext(CommissionsContext)
 
   useEffect(() => {
     getRequests(
@@ -128,6 +131,11 @@ const Requests = () => {
         toast.error(errors)
       })
   }
+  const handleSelectedRequest =(request) =>{
+    sessionStorage.setItem("commission", JSON.stringify({data: request, type: "request"}));
+    setCommission({data: request, type: "request"})
+  }
+
   return (
     <div className="">
       <div className="flex justify-between border-b mb-2">
@@ -183,20 +191,23 @@ const Requests = () => {
                   </td>
                   <td className="p-2"> {request.status}</td>
                   <td className="flex gap-2 items-center p-2">
-                  { user.currentUser.role === "artist" ?
-                    <>
-                      <select id="action" onChange={handleAction}  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5">
-                        <option disabled={true}>Select</option>
-                        <option value="approved">Approve</option>
-                        <option value="declined">Decline</option>
-                        <option value="cancelled">Cancel</option>
-                        <option value="refund">Refund</option>
-                      </select>  
-                    <Button onClick={() =>handleUpdate(request)}>Update</Button>
-                    </>
-                  :
-                  request.status === "pending" && <Button color="failure" onClick={() =>handleCancel(request)}>Cancel</Button>
-                  }
+                    <NavLink to="/dashboard/message" onClick={() => handleSelectedRequest(request)} className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-cyan-300 disabled:hover:bg-white group flex h-min items-center justify-center p-2.5 text-center font-medium focus:z-10 rounded-lg">
+                      Message
+                    </NavLink>
+                    { user.currentUser.role === "artist" ?
+                      <>
+                        <select id="action" onChange={handleAction}  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5">
+                          <option disabled={true}>Select</option>
+                          <option value="approved">Approve</option>
+                          <option value="declined">Decline</option>
+                          <option value="cancelled">Cancel</option>
+                          <option value="refund">Refund</option>
+                        </select>  
+                      <Button onClick={() =>handleUpdate(request)}>Update</Button>
+                      </>
+                    :
+                    request.status === "pending" && <Button color="failure" onClick={() =>handleCancel(request)}>Cancel</Button>
+                    }
                   </td>
                   
                 </tr>

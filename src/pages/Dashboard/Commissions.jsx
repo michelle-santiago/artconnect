@@ -8,9 +8,11 @@ import CommissionForm from '../Artist/CommissionForm'
 import { Button, Card } from 'flowbite-react'
 import CommissionProcess from './CommissionProcess'
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
+import { NavLink } from 'react-router-dom'
 const Commissions = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const { commissions, setCommissions } = useContext(CommissionsContext)
+  const { commission, setCommission } = useContext(CommissionsContext)
   // const [commissions, setCommissions] = useState([])
   const [allCommissions, setAllCommissions] = useState([])
   const user = { currentUser }
@@ -71,6 +73,11 @@ const Commissions = () => {
     setShowModal(true)
     setProcessData(data)
   })
+
+  const handleSelectedCommission =(commission) =>{
+    sessionStorage.setItem("commission", JSON.stringify({data: commission, type: "commission"}));
+    setCommission({data: commission, type: "commission"})
+  }
   return (
     <div>
       <div className="flex justify-between border-b mb-2">
@@ -120,8 +127,12 @@ const Commissions = () => {
                 }
               </td>
               <td className="p-2 flex gap-2">
+                <NavLink to="/dashboard/message" onClick={() => handleSelectedCommission(commission)} className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-cyan-300 disabled:hover:bg-white group flex h-min items-center justify-center p-2.5 text-center font-medium focus:z-10 rounded-lg">
+                  Message
+                </NavLink>
                 {user.currentUser.role === "artist" && <CommissionForm action="update" commission={commission} location="dashboard"/> }
                 <Button color="light" onClick={() => viewProcess(commission)}>View Process</Button>
+               
               </td>
               { showModal? 
               <div className="fixed w-full h-full top-0 left-0 flex items-center justify-center inset-0 z-50 outline-none focus:outline-none">
