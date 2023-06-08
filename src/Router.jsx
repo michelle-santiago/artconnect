@@ -21,7 +21,7 @@ import DashboardMessages from "./pages/Dashboard/Messages"
 import actionCable from 'actioncable'
 
 const CableApp = {}
-CableApp.cable = actionCable.createConsumer('ws://artconnect.onrender.com/cable')
+CableApp.cable = actionCable.createConsumer('wss://artconnect.onrender.com/cable')
 
 const Router = () => {
   return (
