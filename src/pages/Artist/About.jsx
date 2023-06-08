@@ -20,6 +20,7 @@ const About = () => {
       {"Authorization" : user.currentUser.token}, username
     ).then((res) => {
 			setArtist(res.data);
+      console.log(res.data.about,"artist about")
       setArtistAbout(res.data.about)
 		})
 		.catch((err) => {
@@ -47,6 +48,7 @@ const About = () => {
   } 
   return (
     <>
+    
       <div className="fixed top-0 z-50 w-full">
         <Navbars category="artist"/>
       </div>
@@ -63,6 +65,7 @@ const About = () => {
             <ReactQuill theme="snow" value={artistAbout} onChange={setArtistAbout} />
           </>
         :
+        
           <Card>
             <ReactQuill
               value={artist.about}

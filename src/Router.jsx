@@ -17,6 +17,12 @@ import Dashboard from "./pages/Dashboard/Dashboard"
 import DashboardRequests from "./pages/Dashboard/Requests"
 import DashboardCommissions from "./pages/Dashboard/Commissions"
 import DashboardProcess  from "./pages/Dashboard/CommissionProcess"
+import DashboardMessages from "./pages/Dashboard/Messages"
+import actionCable from 'actioncable'
+
+const CableApp = {}
+CableApp.cable = actionCable.createConsumer('ws://localhost:3000/cable')
+
 const Router = () => {
   return (
     <BrowserRouter>
@@ -36,7 +42,7 @@ const Router = () => {
                 <Route path="requests" element={<DashboardRequests />} />
                 <Route path="commissions" element={<DashboardCommissions />}/>
                 <Route path="process" element={<DashboardProcess />} />
-
+                <Route path="message" element={<DashboardMessages cable={CableApp.cable} />} />
             </Route>
 
             <Route path="/artists" element={<Artists />} />
