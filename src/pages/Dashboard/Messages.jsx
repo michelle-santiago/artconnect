@@ -12,12 +12,14 @@ const Messages = ({cable}) => {
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const { commission } = useContext(CommissionsContext)
-  const { messages, setMessages, updateMessage } = useContext(MessagesContext)
+  const { messages, setMessages } = useContext(MessagesContext)
   const [receiver, setReceiver] = useState({})
   const [dates, setDates] = useState([])
   const [messageBody, setMessageBody] = useState("")
 	const messagesEndRef = useRef(null)
 	const [scroll, setScroll] = useState(null)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [IsDisconnected, setIsDisconnected] = useState(false)
 
   //setting msg request body
   let receiverId = user.currentUser.role === "artist" ? commission.data.client_id : commission.data.artist_id
@@ -31,22 +33,7 @@ const Messages = ({cable}) => {
 	yesterday.setDate(yesterday.getDate() - 1)
 	const dateToday = dateFormat(today);
 	const dateYesterday = dateFormat(yesterday);
-
-  //group messages by date
-	const addDay = ((date) => {
-		let found = false;
-		if (dates.length !== 0) {
-			dates.forEach(dateData => {
-				if (dateData === date) {
-					found = true;
-				}
-			});
-		}
-		if (found === false) {
-			dates.push(date)
-		}
-	})
-
+  
   useEffect(() => {
     getCommissionMessages(
       { "Authorization" : user.currentUser.token},
@@ -56,37 +43,66 @@ const Messages = ({cable}) => {
         request_id: requestId,
         receiver_id: receiverId
       }).then(res => {
-          // console.log(res.data,"response")
-          const messages = res.data.messages
+          const messagesData = res.data.messages
           const receiver = res.data.receiver
-          updateMessage(messages)
+          setMessages(messagesData)
           setReceiver(receiver)
-          messages.forEach((message) => {
-            addDay(dateFormat(message.created_at))
-          })
-          // toast.success("")				
+          let uniqueDates = [dateFormat(today)]
+          if (messagesData.length !== 0) {
+            uniqueDates = [...new Set(messagesData.map((message) => dateFormat(message.created_at)))]
+          }
+          setDates(uniqueDates)
         }).catch(err => {
         console.log(err,"error")
         toast.error("Try again. Something went wrong")
       })
 	}, []);
 
-  useEffect(()=>{
-    cable.subscriptions.create
+  const subscription = () => {
+    const subscription = cable.subscriptions.create
     (
       {
         id: chatId,
-        body: messageBody,
         channel: 'CommissionChannel'
       },
       {
         received: (message) => {
-          updateMessage(messages)
-          setMessages([...messages, message.body])
+          if(message.body.sender_id !== user.currentUser.id){
+            setMessages(prevState => [...prevState,  message.body])	
+          }
+        },
+        initialized() {
+          setIsSubscribed(true)
+        },
+      
+        connected() {
+          console.log("Connected")
+          setIsDisconnected(false)
+        },
+        disconnected() {
+          console.log("Disconnected")
+          setIsDisconnected(true)
         }
       }
     )
-  },[messages])
+    return subscription
+  }
+
+  useEffect(()=>{
+    if (isSubscribed){
+      cable.subscriptions.remove(subscription())
+    }else{
+      subscription()
+    }
+  },[isSubscribed])
+
+  useEffect(()=>{
+   if(IsDisconnected){
+    toast.error("Disconnected. Refresh the page")
+   }else{
+    toast.success("You are now connected")
+   } 
+  },[IsDisconnected])
 
   //sending message
 	const handleSubmit = (e) => {
@@ -105,7 +121,8 @@ const Messages = ({cable}) => {
 				body: messageBody
 			})
 				.then(res => {
-          // console.log(res.data)
+          setMessages(prevState => [...prevState,  res.data])	
+          setMessageBody("")
           toast.success("Message sent!")
 				}).catch(err => {+
 					console.log(err)
@@ -135,7 +152,7 @@ const Messages = ({cable}) => {
       </div>
       <div className="h-96 px-6 flex-1 overflow-y-scroll pb-7">
         {dates.map((date, index) => {
-          return (
+          return (    
             <div key={index}>
               <div className="flex justify-center">
                 <div className=" bg-white rounded-full border border-primary-300 text-black text-sm font-bold p-2">
