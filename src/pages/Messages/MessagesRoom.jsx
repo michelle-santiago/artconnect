@@ -28,11 +28,20 @@ const MessagesRoom = (props) => {
   const [IsDisconnected, setIsDisconnected] = useState(false)
   const [messageReceived, setMessageReceived] = useState({})
   //setting msg request body
-  let receiverId = user.currentUser.role === "artist" ? commission.data.client_id : commission.data.artist_id
-  let requestId = commission.type === "request" ?  commission.data.id : commission.data.request_id
-  let commissionId = commission.type === "request" ? "" : commission.data.id
-  let chatId = [requestId, user.currentUser.id, receiverId].sort().join('')
+  let receiverId = ""
+  let requestId = ""
+  let commissionId= "" 
+  let chatId= ""
 
+  if(category === "commission"){
+    receiverId = user.currentUser.role === "artist" ? commission.data.client_id : commission.data.artist_id
+    requestId = commission.type === "request" ?  commission.data.id : commission.data.request_id
+    commissionId = commission.type === "request" ? "" : commission.data.id
+    chatId = [requestId, user.currentUser.id, receiverId].sort().join('')
+  }else{
+    receiverId = contact && contact.id
+    chatId = [user.currentUser.id, receiverId].sort().join('')
+  }
   //setting date with today and yesterday
 	const today = new Date();
 	const yesterday = new Date(today);
@@ -41,10 +50,6 @@ const MessagesRoom = (props) => {
 	const dateYesterday = dateFormat(yesterday);
   
   useEffect(() => {
-      if(category === "direct"){
-        receiverId = contact && contact.id
-        chatId = [user.currentUser.id, receiverId].sort().join('')
-      }
       if(contact !== null || category === "commission"){
         getMessages(
           { "Authorization" : user.currentUser.token},
@@ -125,10 +130,6 @@ const MessagesRoom = (props) => {
   //sending message
 	const handleSubmit = (e) => {
 		e.preventDefault();
-    if(category === "direct"){
-      receiverId = contact && contact.id
-      chatId = [user.currentUser.id, receiverId].sort().join('')
-    }
 		if (messageBody === "" || messageBody === " ") {
 			toast.error("Please input a message")
 		}else if(contact === null && category === "direct"){
