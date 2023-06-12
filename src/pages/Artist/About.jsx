@@ -20,7 +20,6 @@ const About = () => {
       {"Authorization" : user.currentUser.token}, username
     ).then((res) => {
 			setArtist(res.data);
-      console.log(res.data.about,"artist about")
       setArtistAbout(res.data.about)
 		})
 		.catch((err) => {

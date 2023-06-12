@@ -2,17 +2,23 @@ import React, {useEffect, useContext, useState, useRef} from 'react'
 import { CurrentUserContext} from '../../utils/providers/CurrentUserProvider';
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
 import { MessagesContext } from '../../utils/providers/MessagesProvider';
-import { getCommissionMessages } from '../../api/api';
+import { getMessages } from '../../api/api';
 import toast, { Toaster } from 'react-hot-toast';
 import dateFormat from '../../helper/dateFormat';
 import { sendMessage } from '../../api/api';
-import Message from '../Messages/Message';
+import Messages from './Messages';
+import actionCable from 'actioncable'
 
-const Messages = ({cable}) => {
+const CableApp = {}
+CableApp.cable = actionCable.createConsumer('ws://localhost:3000/cable')
+
+const MessagesRoom = (props) => {
+  const cable = CableApp.cable
+  const category = props.category
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const { commission } = useContext(CommissionsContext)
-  const { messages, setMessages } = useContext(MessagesContext)
+  const { messages, setMessages, contact } = useContext(MessagesContext)
   const [receiver, setReceiver] = useState({})
   const [dates, setDates] = useState([])
   const [messageBody, setMessageBody] = useState("")
@@ -20,12 +26,12 @@ const Messages = ({cable}) => {
 	const [scroll, setScroll] = useState(null)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [IsDisconnected, setIsDisconnected] = useState(false)
-
+  const [messageReceived, setMessageReceived] = useState({})
   //setting msg request body
   let receiverId = user.currentUser.role === "artist" ? commission.data.client_id : commission.data.artist_id
   let requestId = commission.type === "request" ?  commission.data.id : commission.data.request_id
   let commissionId = commission.type === "request" ? "" : commission.data.id
-  const chatId = [requestId, user.currentUser.id, receiverId].sort().join('')
+  let chatId = [requestId, user.currentUser.id, receiverId].sort().join('')
 
   //setting date with today and yesterday
 	const today = new Date();
@@ -35,40 +41,47 @@ const Messages = ({cable}) => {
 	const dateYesterday = dateFormat(yesterday);
   
   useEffect(() => {
-    getCommissionMessages(
-      { "Authorization" : user.currentUser.token},
-      {
-        kind: "commission",
-        commission_id: commissionId,
-        request_id: requestId,
-        receiver_id: receiverId
-      }).then(res => {
-          const messagesData = res.data.messages
-          const receiver = res.data.receiver
-          setMessages(messagesData)
-          setReceiver(receiver)
-          let uniqueDates = [dateFormat(today)]
-          if (messagesData.length !== 0) {
-            uniqueDates = [...new Set(messagesData.map((message) => dateFormat(message.created_at)))]
-          }
-          setDates(uniqueDates)
-        }).catch(err => {
-        console.log(err,"error")
-        toast.error("Try again. Something went wrong")
-      })
-	}, []);
+      if(category === "direct"){
+        receiverId = contact && contact.id
+        chatId = [user.currentUser.id, receiverId].sort().join('')
+      }
+      if(contact !== null || category === "commission"){
+        getMessages(
+          { "Authorization" : user.currentUser.token},
+          {
+            kind: category,
+            commission_id: commissionId,
+            request_id: requestId,
+            receiver_id: receiverId
+          }).then(res => {
+              const messagesData = res.data.messages
+              const receiver = res.data.receiver
+              setMessages(messagesData)
+              setReceiver(receiver)
+              let uniqueDates = [dateFormat(today)]
+              if (messagesData.length !== 0) {
+                uniqueDates = [...new Set(messagesData.map((message) => dateFormat(message.created_at)))]
+              }
+              setDates(uniqueDates)
+            }).catch(err => {
+            console.log(err,"error")
+            toast.error("Try again. Something went wrong")
+          })
+      }
+	}, [contact, commission]);
 
   const subscription = () => {
+    let channel = category === "commission" ? "CommissionChannel" : "DirectChannel"
     const subscription = cable.subscriptions.create
     (
       {
         id: chatId,
-        channel: 'CommissionChannel'
+        channel: channel
       },
       {
         received: (message) => {
           if(message.body.sender_id !== user.currentUser.id){
-            setMessages(prevState => [...prevState,  message.body])	
+            setMessageReceived(message.body)
           }
         },
         initialized() {
@@ -76,11 +89,9 @@ const Messages = ({cable}) => {
         },
       
         connected() {
-          console.log("Connected")
           setIsDisconnected(false)
         },
         disconnected() {
-          console.log("Disconnected")
           setIsDisconnected(true)
         }
       }
@@ -104,17 +115,30 @@ const Messages = ({cable}) => {
    } 
   },[IsDisconnected])
 
+  useEffect(()=>{
+    const lastMsg = messages[messages.length - 1]
+    if((lastMsg && messageReceived && lastMsg.id !== messageReceived.id)){
+      setMessages(prevState => [...prevState,  messageReceived])	
+    }
+  },[messageReceived])
+
   //sending message
 	const handleSubmit = (e) => {
 		e.preventDefault();
+    if(category === "direct"){
+      receiverId = contact && contact.id
+      chatId = [user.currentUser.id, receiverId].sort().join('')
+    }
 		if (messageBody === "" || messageBody === " ") {
 			toast.error("Please input a message")
-		}
+		}else if(contact === null && category === "direct"){
+      toast.error("No contact to message")
+    }
 		else {
 			sendMessage(
       { "Authorization" : user.currentUser.token},
       {
-				kind: "commission",
+				kind: category,
 				receiver_id: receiverId,
         request_id: requestId,
         commission_id: commissionId,
@@ -128,7 +152,6 @@ const Messages = ({cable}) => {
 					console.log(err)
 				})
 		}
-
 	}
 	const handleChange = (e) => {
 		setMessageBody(e.target.value)
@@ -144,11 +167,13 @@ const Messages = ({cable}) => {
   return (
     <>
       <div className="mb-2">
-        <div className="flex justify-between items-baseline">
-          <h1 className="text-2xl">  {commission.type === "request" ? "Request" : "Commission"} # {commission.data.id}</h1>
-          <span className="bg-primary-950 text-white text-xs font-medium mr-2 px-4 py-2 rounded border-green-400">{commission.data.status.toUpperCase()}</span>
-        </div>
-      <h1>{receiver.first_name} {receiver.last_name}</h1>
+        {category === "commission" &&
+          <div className="flex justify-between items-baseline">
+            <h1 className="text-2xl">  {commission.type === "request" ? "Request" : "Commission"} # {commission.data.id}</h1>
+            <span className="bg-primary-950 text-white text-xs font-medium mr-2 px-4 py-2 rounded border-green-400">{commission.data.status.toUpperCase()}</span>
+          </div>
+        }
+        <h1 className="pt-2 pb-2 font-semibold">{receiver.first_name} {receiver.last_name}</h1>
       </div>
       <div className="h-96 px-6 flex-1 overflow-y-scroll pb-7">
         {dates.map((date, index) => {
@@ -162,7 +187,7 @@ const Messages = ({cable}) => {
                 </div>
               </div>
               <hr className="-mt-5"></hr>
-              <Message groupDate={date} messages={messages} receiver={receiver} sender={user}></Message>
+              <Messages groupDate={date} messages={messages} receiver={receiver} sender={user}></Messages>
               <div ref={messagesEndRef} />
             </div>
           )
@@ -176,9 +201,9 @@ const Messages = ({cable}) => {
           </svg>
         </button>
       </form>
-      <Toaster position="top-center" reverseOrder={false}/>
+      <Toaster position="bottom-center" reverseOrder={false}/>
     </>
   )
 }
 
-export default Messages
+export default MessagesRoom
