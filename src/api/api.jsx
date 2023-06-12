@@ -83,7 +83,7 @@ export const updateProcessStatus = async (token, data) => {
   return await axios.patch(`${url}/commissions/${data.commission_id}/complete_process`, data, { headers: token })
 }
 
-export const getCommissionMessages= async (token, data) => {
+export const getMessages= async (token, data) => {
   return await axios.get(`${url}/messages?kind=${data.kind}&receiver_id=${data.receiver_id}&request_id=${data.request_id}&commission_id=${data.commission_id}`, { headers: token })
 }
 
@@ -91,6 +91,7 @@ export const sendMessage = async (token, data) => {
   return await axios.post(`${url}/messages`, data, { headers: token })
 }
 
-export const getDirectMessages= async (token, data) => {
-  return await axios.get(`${url}/messages?kind=${data.kind}&receiver_id=${data.receiver_id}`, { headers: token })
+export const getContacts = async (token) => {
+  return await axios.get(`${url}/contacts`, { headers: token })
 }
+

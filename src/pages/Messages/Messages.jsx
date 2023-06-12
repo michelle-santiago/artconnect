@@ -1,100 +1,41 @@
+import React from 'react'
+import dateFormat from '../../helper/dateFormat'
+import timeFormat from '../../helper/timeFormat'
 
-import React, {useEffect, useState} from "react"
-
-// import { createConsumer } from "../websocket/websocket";
-const ws = new WebSocket("ws://localhost:3000/cable");
-
-const Message = () => {
-  const [messages, setMessages] = useState([]);
-  const [guid, setGuid] = useState(""); //note to self! change to user_id
-  const messagesContainer = document.getElementById("messages");
-
-  ws.onopen = () => {
-    console.log("Connected to websocket server");
-    setGuid(Math.random().toString(36).substring(2, 15));
-
-    ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "DirectChannel",
-        }),
-      })
-    );
-  };
-
-  ws.onmessage = (e) => {
-    const data = JSON.parse(e.data);
-    if (data.type === "ping") return;
-    if (data.type === "welcome") return;
-    if (data.type === "confirm_subscription") return;
-
-    const message = data.message;
-    setMessagesAndScrollDown([...messages, message]);
-  };
-
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  useEffect(() => {
-    resetScroll();
-  }, [messages]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const body = e.target.message.value;
-    e.target.message.value = "";
-
-    await fetch("http://localhost:3000/api/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ body }),
-    });
-  };
-
-  const fetchMessages = async () => {
-    const response = await fetch("http://localhost:3000/api/v1/messages");
-    const data = await response.json();
-    setMessagesAndScrollDown(data);
-  };
-
-  const setMessagesAndScrollDown = (data) => {
-    setMessages(data);
-    resetScroll();
-  };
-
-  const resetScroll = () => {
-    if (!messagesContainer) return;
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  };
-
+const Message = (props) => {
+  const groupDate = props.groupDate
+  const messages = props.messages
+  const receiver = props.receiver
+  const sender = props.sender.currentUser
   return (
-    <div className="App">
-      <div className="messageHeader">
-        <h1>Messages</h1>
-        <p>Guid: {guid}</p>
-      </div>
-      <div className="messages" id="messages">
-        {messages.map((message) => (
-          <div className="message" key={message.id}>
-            <p>{message.body}</p>
-          </div>
-        ))}
-      </div>
-      <div className="messageForm">
-        <form onSubmit={handleSubmit}>
-          <input className="messageInput" type="text" name="message" />
-          <button className="messageButton" type="submit">
-            Send
-          </button>
-        </form>
-      </div>
+    <div className="pt-5">
+      {messages.map((message,index)=>{
+        const date = dateFormat(message.created_at)
+        if(date === groupDate){
+            return(
+                <div key={index}>
+                    <div className="flex items-start text-sm pt-3 gap-2">
+                      <div className="relative w-8 h-8 overflow-hidden rounded bg-primary-50">
+                          { message.sender_id === sender.id && sender.avatar === null || message.sender_id !== sender.id && receiver.avatar_url === null? 
+                            <svg className="absolute w-8 h-8 text-primary-400 -left-.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+                            :
+                            <img src={message.sender_id === sender.id ? sender.avatar : receiver.avatar_url} className="h-8 w-8"/>
+                          }
+                      </div>
+                        <div className="flex-1 overflow-hidden">
+                            <div className="flex flex-row gap-2">
+                                <span className="font-bold">{message.sender_id === sender.id ? sender.fullname : receiver.first_name+" "+receiver.last_name}</span>
+                                <span className="text-grey text-xs pt-0.5">{timeFormat(message.created_at)}</span>
+                            </div>
+                            <p className="text-black leading-normal">{message.body}</p>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+      })}
     </div>
-  );
+  )
 }
 
-export default Message;
+export default Message

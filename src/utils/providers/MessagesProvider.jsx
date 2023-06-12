@@ -1,22 +1,34 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 export let MessagesContext = createContext({});
 
 export const MessagesProvider = ({ children }) => {
-    const messagesData = JSON.parse(sessionStorage.getItem("messages"))
-    const [ messages, setMessages ] =  useState(!messagesData ? [] : messagesData);
-    
+    const [ messages, setMessages ] =  useState([]);
+    const contactsData= JSON.parse(sessionStorage.getItem("contacts"))
+    const [ contacts, setContacts ] =  useState(!contactsData ? [] : contactsData);
+    const contactData= JSON.parse(sessionStorage.getItem("contact"))
+    const [ contact, setContact ] =  useState(!contactData ? null : contactData);
 
-    const updateMessage = (data) => {
-      sessionStorage.setItem("messages", JSON.stringify(data));
-      setMessages(data);
-    };
+    const updateContacts = (data) => {
+		sessionStorage.setItem("contacts", JSON.stringify(data));
+		setContacts(data);
+	};
+
+    const updateContact = (data) => {
+		sessionStorage.setItem("contact", JSON.stringify(data));
+		setContact(data);
+	};
       
     return (
         < MessagesContext.Provider
             value={{
                 messages,
                 setMessages,
-                updateMessage    
+                contacts,
+                setContacts,
+                updateContacts,
+                contact,
+                setContact,
+                updateContact
             }}
         >
             { children }

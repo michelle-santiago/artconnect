@@ -3,14 +3,18 @@ import { CurrentUserContext } from '../utils/providers/CurrentUserProvider'
 import { getArtists } from '../api/api'
 import toast, { Toaster } from 'react-hot-toast'
 import { Card } from 'flowbite-react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { LazyLoadComponent } from 'react-lazy-load-image-component'
 import Navbars from '../components/Navbars'
+import { MessagesContext } from '../utils/providers/MessagesProvider'
+import { getContacts } from '../api/api'
 const Artists = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const [artists, setArtists] = useState([])
   const user = { currentUser }
-  
+  const { contacts, updateContacts, updateContact } = useContext(MessagesContext)
+  const navigate = useNavigate();
+
 	useEffect(() => {
     getArtists(
       {"Authorization" : user.currentUser.token}
@@ -20,7 +24,28 @@ const Artists = () => {
 		.catch((err) => {
 			toast.error(err.response.data.error)
 		});
+
+    getContacts(
+      {"Authorization" : user.currentUser.token}
+    ).then((res) => {
+      updateContacts(res.data)
+		})
+		.catch((err) => {
+			toast.error(err.response.data.error)
+		});
 	}, []);
+
+  const handleMessage = (artist) =>{
+    if (!(contacts.find(contact => contact.id === artist.id))){
+      // setContacts(prevState => [...prevState,  artist])
+      updateContact(artist)	
+    }
+    navigate("/messages/direct");
+  }
+
+  useEffect(()=>{
+    updateContacts(contacts)
+  },[updateContact])
 
   return (
     <>
@@ -55,9 +80,11 @@ const Artists = () => {
                       <NavLink className="inline-flex items-center px-4 py-2 text-sm bg-primary-950 text-center text-white font-bold font-sans" to={`/${artist.username}`}>
                         Visit
                       </NavLink>
-                      <NavLink className="inline-flex items-center border px-4 py-2 text-sm text-center text-primary-950 font-bold font-sans" to='/messages'>
-                        Message
-                      </NavLink>
+                      {currentUser.role === "client" &&
+                        <button onClick={() => handleMessage(artist)} className="inline-flex items-center border px-4 py-2 text-sm text-center text-primary-950 font-bold font-sans" to='/messages'>
+                          Message
+                        </button>
+                      }
                     </div>
                   </div>
                 </Card>
