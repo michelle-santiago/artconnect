@@ -1,5 +1,5 @@
 import axios from "axios";
-const url = "https://artconnect.onrender.com/api/v1"
+const url = import.meta.env.VITE_API_URL
 
 export const signUp = async (data) => {
     return await axios.post(`${url}/sign_up`, data , {headers: {

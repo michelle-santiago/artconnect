@@ -9,8 +9,9 @@ import { sendMessage } from '../../api/api';
 import Messages from './Messages';
 import actionCable from 'actioncable'
 
+const url = import.meta.env.VITE_CABLE_URL
 const CableApp = {}
-CableApp.cable = actionCable.createConsumer('wss://artconnect.onrender.com/cable')
+CableApp.cable = actionCable.createConsumer(`${url}`)
 
 const MessagesRoom = (props) => {
   const cable = CableApp.cable
@@ -27,6 +28,7 @@ const MessagesRoom = (props) => {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [IsDisconnected, setIsDisconnected] = useState(false)
   const [messageReceived, setMessageReceived] = useState({})
+
   //setting msg request body
   let receiverId = ""
   let requestId = ""
