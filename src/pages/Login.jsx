@@ -18,18 +18,25 @@ const Login = () => {
 
 	const handleSubmit = async (e) => { 
 		e.preventDefault();
-		signIn({
-			email: user.emailAddress,
-			password: user.password,
-		})
-		.then((res) => {
-			updateUserProfile(res.data);
+		toast.promise(
+			signIn({
+				email: user.emailAddress,
+				password: user.password,
+			})
+			.then((res) => {
+				updateUserProfile(res.data);
 
-			navigate("/");
-		})
-		.catch((err) => {
-			toast.error(err.response.data.error)
-		});
+				navigate("/");
+			})
+			.catch((err) => {
+				throw err;
+			}),
+			{
+				loading: "Signing in...",
+				error: (err) => err.response.data.error,
+			}
+		);
+	
 	};
 
 	const handleChange = (e) => {
@@ -60,7 +67,7 @@ const Login = () => {
 								id={field.id}
 								name={field.name}
 								type={field.type}
-								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5"
+								className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:ring-primary-950 focus:border-primary-950 block w-full p-2.5`}
 								placeholder={field.placeholder}
 							/>
 						</div>

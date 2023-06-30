@@ -1,11 +1,11 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
+import React, { useState, useContext, useEffect} from 'react'
 import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider';
 import { Button, Label, Card } from 'flowbite-react'
 import { commissionFields } from '../../constants/commissionFields';
 import toast, { Toaster } from 'react-hot-toast';
-import { createCommission } from '../../api/api';
-import { updateCommission } from '../../api/api';
+import { createCommission, updateCommission  } from '../../api/api';
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider';
+
 const CommissionForm = (props) => {
   const action = props.action
   const commissionData = props.commission
@@ -48,6 +48,7 @@ const CommissionForm = (props) => {
   }
   
   const addCommission = () =>{
+    toast.promise(
     createCommission(
       {
         "Authorization" : user.currentUser.token,
@@ -59,49 +60,60 @@ const CommissionForm = (props) => {
         duration: commission.duration,
         image: commission.image
       }).then(res => {
-          toast.success("Commission Added Successfully")	
           const newCommission = res.data	
           resetForm()
           setCommissions(prevState => [...prevState,  newCommission])	
-        }).catch(err => {
-        let errors = err.response.data.errors
-        if(errors.length > 1) {
-          errors = errors.join("\n")	
-        }
-        toast.error(errors)
-      })
-  } 
-
-  const editCommission = () =>{
-    updateCommission(
-      {
-        "Authorization" : user.currentUser.token,
-        "Content-Type" : "multipart/form-data"
-      },
-      {
-        id: commissionData.id,
-        kind: commission.kind,
-        price: commission.price,
-        duration: commission.duration,
-        image: commission.image
-      }).then(res => {
-          toast.success("Commission Updated Successfully")	
-          const updatedCommission = res.data
-          const newCommissions = commissions.map(data => {
-            if (data.id === updatedCommission.id) {
-              return updatedCommission
-            }
-            return data;
-          });
-          resetForm()
-          setCommissions(newCommissions);
       }).catch(err => {
         let errors = err.response.data.errors
         if(errors.length > 1) {
           errors = errors.join("\n")	
         }
-        toast.error(errors)
-      })
+        throw errors
+      }),
+      {
+        loading: "Adding Commission...",
+				success: "Commission Added Successfully",
+				error: (errors) => errors
+      }
+    )
+  } 
+
+  const editCommission = () =>{
+    toast.promise(
+      updateCommission(
+        {
+          "Authorization" : user.currentUser.token,
+          "Content-Type" : "multipart/form-data"
+        },
+        {
+          id: commissionData.id,
+          kind: commission.kind,
+          price: commission.price,
+          duration: commission.duration,
+          image: commission.image
+        }).then(res => {
+            const updatedCommission = res.data
+            const newCommissions = commissions.map(data => {
+              if (data.id === updatedCommission.id) {
+                return updatedCommission
+              }
+              return data;
+            });
+            resetForm()
+            setCommissions(newCommissions);
+        }).catch(err => {
+          let errors = err.response.data.errors
+          if(errors.length > 1) {
+            errors = errors.join("\n")	
+          }
+          throw errors
+        }),
+        {
+          loading: "Updating Commission...",
+          success: "Commission Updated Successfully",
+          error: (errors) => errors
+        }
+    )
   } 
 	const handleChange = (e) => {
 		setCommission({...commission, [e.target.name] : e.target.value})	

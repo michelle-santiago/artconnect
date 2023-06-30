@@ -6,8 +6,7 @@ export const CommissionsProvider = ({ children }) => {
     const [ artistInfo, setArtistInfo] = useState([])
     const commissionData = JSON.parse(sessionStorage.getItem("commission"))
     const [ commission, setCommission ] =  useState(!commissionData ? [] : commissionData);
-    //note update later
-    // const [ processes, setProcesses ] =  useState([]);
+    const [ processes, setProcesses ] =  useState([]);
     
     return (
         < CommissionsContext.Provider
@@ -17,9 +16,9 @@ export const CommissionsProvider = ({ children }) => {
                 commission,
                 setCommission,
                 artistInfo,
-                setArtistInfo
-                // processes,
-                // setProcesses 
+                setArtistInfo,
+                processes,
+                setProcesses 
                
             }}
         >
