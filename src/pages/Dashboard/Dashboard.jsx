@@ -5,10 +5,10 @@ const Dashboard = () => {
    const [open, setOpen] = useState(false);
    return (
      <>
-       <div className="fixed top-0 z-50 w-full">
+       <div className="top-0 w-full">
           <Navbars category="artist"/>
        </div>
-       <div className="w-full fixed top-14 left-0 z-40 h-screen flex">
+       <div className="w-full fixed top-15 left-0 h-screen flex">
          <aside className={`${open ? "w-64" : "w-14"} bg-gray-100 p-2 pt-8 relative duration-300`}>
            <button className={`absolute cursor-pointer -right-3 top-9 w-7 ${!open && "rotate-180"}  border-2 rounded-full bg-white`} onClick={() => setOpen(!open)}>
              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">

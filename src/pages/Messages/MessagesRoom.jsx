@@ -2,11 +2,11 @@ import React, {useEffect, useContext, useState, useRef} from 'react'
 import { CurrentUserContext} from '../../utils/providers/CurrentUserProvider';
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
 import { MessagesContext } from '../../utils/providers/MessagesProvider';
-import { getMessages } from '../../api/api';
+import { getMessages, sendMessage } from '../../api/api';
 import toast, { Toaster } from 'react-hot-toast';
 import dateFormat from '../../helper/dateFormat';
-import { sendMessage } from '../../api/api';
 import Messages from './Messages';
+import MessagesSkeleton from '../../components/skeleton/Messages';
 import actionCable from 'actioncable'
 
 const url = import.meta.env.VITE_CABLE_URL
@@ -24,11 +24,11 @@ const MessagesRoom = (props) => {
   const [dates, setDates] = useState([])
   const [messageBody, setMessageBody] = useState("")
 	const messagesEndRef = useRef(null)
-	const [scroll, setScroll] = useState(null)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [IsDisconnected, setIsDisconnected] = useState(false)
   const [messageReceived, setMessageReceived] = useState({})
-
+  const [isLoading, setIsLoading] = useState(true)
+  
   //setting msg request body
   let receiverId = ""
   let requestId = ""
@@ -50,6 +50,7 @@ const MessagesRoom = (props) => {
 	yesterday.setDate(yesterday.getDate() - 1)
 	const dateToday = dateFormat(today);
 	const dateYesterday = dateFormat(yesterday);
+ 
   
   useEffect(() => {
       if(contact !== null || category === "commission"){
@@ -70,9 +71,9 @@ const MessagesRoom = (props) => {
                 uniqueDates = [...new Set(messagesData.map((message) => dateFormat(message.created_at)))]
               }
               setDates(uniqueDates)
+              setIsLoading(false)
             }).catch(err => {
-            console.log(err,"error")
-            toast.error("Try again. Something went wrong")
+              toast.error("Something went wrong, reload the page")
           })
       }
 	}, [contact, commission]);
@@ -138,22 +139,32 @@ const MessagesRoom = (props) => {
       toast.error("No contact to message")
     }
 		else {
-			sendMessage(
-      { "Authorization" : user.currentUser.token},
-      {
-				kind: category,
-				receiver_id: receiverId,
-        request_id: requestId,
-        commission_id: commissionId,
-				body: messageBody
-			})
-				.then(res => {
-          setMessages(prevState => [...prevState,  res.data])	
-          setMessageBody("")
-          toast.success("Message sent!")
-				}).catch(err => {+
-					console.log(err)
-				})
+      toast.promise(
+        sendMessage(
+          { "Authorization" : user.currentUser.token},
+          {
+            kind: category,
+            receiver_id: receiverId,
+            request_id: requestId,
+            commission_id: commissionId,
+            body: messageBody
+          })
+          .then(res => {
+            setMessages(prevState => [...prevState,  res.data])	
+            setMessageBody("")
+          }).catch(err => {
+            let errors = err.response.data.errors
+            if(errors.length > 1) {
+              errors = errors.join("\n")	
+            }
+            throw errors
+          }),
+          {
+            loading: "Sending...",
+            success: "Message sent!",
+            error: (errors) => errors
+          }
+      )
 		}
 	}
 	const handleChange = (e) => {
@@ -165,37 +176,43 @@ const MessagesRoom = (props) => {
 
 	useEffect(() => {
 		scrollToBottom()
-	}, [messages, scroll]);
+	}, [messages]);
 
   return (
     <>
-      <div className="mb-2">
-        {category === "commission" &&
-          <div className="flex justify-between items-baseline">
-            <h1 className="text-2xl">  {commission.type === "request" ? "Request" : "Commission"} # {commission.data.id}</h1>
-            <span className="bg-primary-950 text-white text-xs font-medium mr-2 px-4 py-2 rounded border-green-400">{commission.data.status.toUpperCase()}</span>
-          </div>
-        }
-        <h1 className="pt-2 pb-2 font-semibold">{receiver.first_name} {receiver.last_name}</h1>
-      </div>
-      <div className="h-96 px-6 flex-1 overflow-y-scroll pb-7">
-        {dates.map((date, index) => {
-          return (    
-            <div key={index}>
-              <div className="flex justify-center">
-                <div className=" bg-white rounded-full border border-primary-300 text-black text-sm font-bold p-2">
-                  {date === dateToday && "Today"}
-                  {date === dateYesterday && "Yesterday"}
-                  {date !== dateToday && date !== dateYesterday && date}
-                </div>
+      { isLoading ?
+          <MessagesSkeleton/>
+        :
+        <>
+          <div className="mb-2">
+            {category === "commission" &&
+              <div className="flex justify-between items-baseline">
+                <h1 className="text-2xl"> {commission.type === "request" ? "Request" : "Commission"} # {commission.data.id}</h1>
+                <span className="bg-primary-950 text-white text-xs font-medium mr-2 px-4 py-2 rounded border-green-400">{commission.data.status.toUpperCase()}</span>
               </div>
-              <hr className="-mt-5"></hr>
-              <Messages groupDate={date} messages={messages} receiver={receiver} sender={user}></Messages>
-              <div ref={messagesEndRef} />
-            </div>
-          )
-        })}
-      </div>
+            }
+            <h1 className="pt-2 pb-2 font-semibold">{receiver.first_name} {receiver.last_name}</h1>
+          </div>
+          <div className="h-96 px-6 flex-1 overflow-y-scroll pb-7">
+            {dates.map((date, index) => {
+              return (    
+                <div key={index}>
+                  <div className="flex justify-center">
+                    <div className="bg-white rounded-full border border-primary-300 text-black text-sm font-bold p-1">
+                      {date === dateToday && "Today"}
+                      {date === dateYesterday && "Yesterday"}
+                      {date !== dateToday && date !== dateYesterday && date}
+                    </div>
+                  </div>
+                  <hr className="-mt-5"></hr>
+                  <Messages groupDate={date} messages={messages} receiver={receiver} sender={user}></Messages>
+                  <div ref={messagesEndRef} />
+                </div>
+              )
+            })}
+          </div>
+        </>
+      }
       <form className="flex overflow-hidden border" onSubmit={handleSubmit}>
         <input type="text" className="w-full px-4 border-none focus:ring-0 focus:ring-primary-950 focus:border-primary-950" placeholder="Message" value={messageBody} onChange={handleChange} />
         <button type="submit" className="cursor-pointer text-3xl text-grey p-2" onSubmit={handleSubmit}>

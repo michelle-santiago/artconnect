@@ -1,36 +1,35 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { getCommissions } from '../../api/api'
+import { getCommissions, updateCommissionStatus  } from '../../api/api'
 import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider'
 import toast, { Toaster } from 'react-hot-toast'
-import { updateCommissionStatus } from '../../api/api'
 import { LazyLoadComponent } from 'react-lazy-load-image-component'
 import CommissionForm from '../Artist/CommissionForm'
 import { Button, Card } from 'flowbite-react'
 import CommissionProcess from './CommissionProcess'
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
 import { NavLink } from 'react-router-dom'
+import TableCellsSkeleton from '../../components/skeleton/TableCells'
+
 const Commissions = () => {
   const { currentUser } = useContext(CurrentUserContext)
-  const { commissions, setCommissions } = useContext(CommissionsContext)
-  const { commission, setCommission } = useContext(CommissionsContext)
-  // const [commissions, setCommissions] = useState([])
+  const { commissions, setCommissions, setCommission } = useContext(CommissionsContext)
   const [allCommissions, setAllCommissions] = useState([])
   const user = { currentUser }
-  const [processData, setProcessData] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  
+  const [showModal, setShowModal] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
     getCommissions(
       {"Authorization" : user.currentUser.token}
     ).then((res) => {
       const commissionsData = res.data
       const result = commissionsData.filter(commission => commission.status !== null);
+      setIsLoading(false)
       setCommissions(result);
       setAllCommissions(result)
 		})
 		.catch((err) => {
-      console.log(err)
-			toast.error(err.response.data.error)
+			toast.error("Something went wrong, reload page")
 		});
 	}, []);
 
@@ -45,33 +44,40 @@ const Commissions = () => {
 
   const handleCommissionStatus = (commissionData) =>{
     commissionData.status = "completed"
-    updateCommissionStatus(
-      {
-        "Authorization" : user.currentUser.token,
-      },
-      {
-        commission_id: commissionData.id
-      }).then(res => {
-          toast.success("Commission Status Updated Successfully")				
-          const newCommissions = commissions.map(data => {
-            if (data.id === commissionData.id) {
-              return commissionData
-            }
-            return data;
-          });
-          setCommissions(newCommissions);
-        }).catch(err => {
-        console.log(err)
-        let errors = err.response.data.errors
-        if(errors.length > 1) {
-          errors = errors.join("\n")	
+    toast.promise(
+      updateCommissionStatus(
+        {
+          "Authorization" : user.currentUser.token,
+        },
+        {
+          commission_id: commissionData.id
+        }).then(res => {		
+            const newCommissions = commissions.map(data => {
+              if (data.id === commissionData.id) {
+                return commissionData
+              }
+              return data;
+            });
+            setCommissions(newCommissions);
+          }).catch(err => {
+          console.log(err)
+          let errors = err.response.data.errors
+          if(errors.length > 1) {
+            errors = errors.join("\n")	
+          }
+          throw errors
+        }),
+        {
+          loading: "Updating...",
+          success: "Status Updated Successfully",
+          errors: (errors) => errors
         }
-        toast.error(errors)
-      })
+    )
+    
   }
-  const viewProcess = ((data)=>{
+  const viewProcess = ((commission)=>{
+    setCommission(commission)
     setShowModal(true)
-    setProcessData(data)
   })
 
   const handleSelectedCommission =(commission) =>{
@@ -104,59 +110,60 @@ const Commissions = () => {
             </tr>
         </thead>
         <tbody className="mx-2 my-2">
-        { commissions.map((commission, index) => {
-          return (
-            <tr key={commission.id} className="text-sm font-normal text-gray-900 whitespace-nowrap">
-              <td className="p-2">{index + 1}</td>
-              <td className="p-2">
-                <LazyLoadComponent>
-                  <img className="w-10 h-10 rounded-lg bg-gray-500" src={commission.image_url}/>
-                </LazyLoadComponent>
-              </td>
-              <td className="p-2 max-w-xs truncate ..."><span className="">{commission.kind}</span></td>
-              <td className="p-2">${commission.price}</td>
-              <td className="p-2">{commission.duration} days</td>
-              <td className="p-2">
-                { user.currentUser.role === "artist" ?
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" value="" onChange={() =>handleCommissionStatus(commission)} className="sr-only peer" checked={commission.status === "completed" && true} disabled={commission.status === "completed" && true}/>
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-900">{commission.status}</span>
-                  </label>
-                : commission.status
-                }
-              </td>
-              <td className="p-2 flex gap-2">
-                <NavLink to="/dashboard/message" onClick={() => handleSelectedCommission(commission)} className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-cyan-300 disabled:hover:bg-white group flex h-min items-center justify-center p-2.5 text-center font-medium focus:z-10 rounded-lg">
-                  Message
-                </NavLink>
-                {user.currentUser.role === "artist" && <CommissionForm action="update" commission={commission} location="dashboard"/> }
-                <Button color="light" onClick={() => viewProcess(commission)}>View Process</Button>
-               
-              </td>
-              { showModal? 
-              <div className="fixed w-full h-full top-0 left-0 flex items-center justify-center inset-0 z-50 outline-none focus:outline-none">
-              <div className="absolute w-full h-full ">
-              <Card className="w-full shadow-none">
-                <button onClick={() => setShowModal(false)} className="absolute m-3 top-0 right-0 text-primary-500 hover:text-primary-950">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-                <h1 className="text-2xl font-bold">Commission</h1>
-                <CommissionProcess commission={processData}/>
-              </Card>
-              </div>
-            </div>
-          : null }
-            </tr>
-            
-          )
-        })}
+          { isLoading ? 
+            <TableCellsSkeleton count={7}/>
+          :
+           commissions.map((commission, index) => {
+            return (
+              <tr key={commission.id} className="text-sm font-normal text-gray-900 whitespace-nowrap">
+                <td className="p-2">{index + 1}</td>
+                <td className="p-2">
+                  <LazyLoadComponent>
+                    <img className="w-10 h-10 rounded-lg bg-gray-500" src={commission.image_url}/>
+                  </LazyLoadComponent>
+                </td>
+                <td className="p-2 max-w-xs truncate ..."><span className="">{commission.kind}</span></td>
+                <td className="p-2">${commission.price}</td>
+                <td className="p-2">{commission.duration} days</td>
+                <td className="p-2">
+                  { user.currentUser.role === "artist" ?
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" value="" onChange={() =>handleCommissionStatus(commission)} className="sr-only peer" checked={commission.status === "completed" && true} disabled={commission.status === "completed" && true}/>
+                      <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                      <span className="ml-3 text-sm font-medium text-gray-900">{commission.status}</span>
+                    </label>
+                  : commission.status
+                  }
+                </td>
+                <td className="p-2 flex gap-2">
+                  <NavLink to="/dashboard/message" onClick={() => handleSelectedCommission(commission)} className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-cyan-300 disabled:hover:bg-white group flex h-min items-center justify-center p-2.5 text-center font-medium focus:z-10 rounded-lg">
+                    Message
+                  </NavLink>
+                  {user.currentUser.role === "artist" && <CommissionForm action="update" commission={commission} location="dashboard"/> }
+                  <Button color="light" onClick={() => viewProcess(commission)}>View Process</Button>
+                </td>
+                { showModal? 
+                <div className="fixed w-full h-full top-0 left-0 flex items-center justify-center inset-0 z-50 outline-none focus:outline-none">
+                  <div className="absolute w-full h-full ">
+                    <Card className="w-full shadow-none">
+                      <button onClick={() => setShowModal(false)} className="absolute m-3 top-0 right-0 text-primary-500 hover:text-primary-950">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                      <h1 className="text-2xl font-bold">Commission</h1>
+                      <CommissionProcess commission={commission}/>
+                      {/* <CommissionProcess/> */}
+                    </Card>
+                  </div>
+                </div>
+                : null }
+                </tr>
+              )
+            })
+          }
         </tbody>
       </table>
-      
-      
       <Toaster position="top-center" reverseOrder={false}/>
     </div>
   )

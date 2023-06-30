@@ -1,32 +1,32 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { getRequests } from '../../api/api'
+import { getRequests, updateRequest, updatePayment, cancelRequest } from '../../api/api'
 import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider'
 import toast, { Toaster } from 'react-hot-toast'
 import { Button } from 'flowbite-react'
 import { LazyLoadComponent } from 'react-lazy-load-image-component'
-import { updateRequest } from '../../api/api'
-import { updatePayment } from '../../api/api'
-import { cancelRequest } from '../../api/api'
 import { CommissionsContext } from '../../utils/providers/CommissionsProvider'
 import { NavLink } from 'react-router-dom'
+import TableCellsSkeleton from '../../components/skeleton/TableCells'
+
 const Requests = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const [requests, setRequests] = useState([])
   const [allRequests, setAllRequests] = useState([])
   const [action, setAction] = useState("approved")
   const user = { currentUser }
-  const { commission, setCommission } = useContext(CommissionsContext)
+  const { setCommission } = useContext(CommissionsContext)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     getRequests(
       {"Authorization" : user.currentUser.token}
     ).then((res) => {
+      setIsLoading(false)
 			setRequests(res.data);
       setAllRequests(res.data)
 		})
 		.catch((err) => {
-      console.log(err)
-			toast.error(err.response.data.error)
+			toast.error("Something went wrong, reload the page")
 		});
 	}, []);
 
@@ -41,31 +41,37 @@ const Requests = () => {
 
   const handleCancel = (requestData) =>{
     requestData.status = "cancelled"
-    cancelRequest(
-      {
-        "Authorization" : user.currentUser.token
-      },
-      {
-        request_id: requestData.id,
-        status: "cancelled"
-            
-      }).then(res => {
-          toast.success("Request Cancelled Successfully")				
-          const newRequests = requests.map(data => {
-          if (data.id === requestData.id) {
-            return requestData
+    toast.promise(
+      cancelRequest(
+        {
+          "Authorization" : user.currentUser.token
+        },
+        {
+          request_id: requestData.id,
+          status: "cancelled"
+              
+        }).then(res => {	
+            const newRequests = requests.map(data => {
+            if (data.id === requestData.id) {
+              return requestData
+            }
+            return data;
+          });
+          setRequests(newRequests);
+          }).catch(err => {
+          let errors = err.response.data.errors
+          if(errors.length > 1) {
+            errors = errors.join("\n")	
           }
-          return data;
-        });
-        setRequests(newRequests);
-        }).catch(err => {
-        console.log(err)
-        let errors = err.response.data.errors
-        if(errors.length > 1) {
-          errors = errors.join("\n")	
+          throw errors
+        }),
+        {
+          loading: "Cancelling...",
+          success: "Request Cancelled Successfully",
+          error: (errors) => errors
         }
-        toast.error(errors)
-      })
+    )
+    
   }
 
   const handleAction = (e) =>{
@@ -74,62 +80,76 @@ const Requests = () => {
 
   const handleUpdate = (requestData) =>{
     requestData.status = action
-    updateRequest(
-      {
-        "Authorization" : user.currentUser.token
-      },
-      {
-        request_id: requestData.id,
-        kind: requestData.kind,
-        price: requestData.price,
-        duration: requestData.duration,
-        image_url: requestData.image_url,
-        client_id: requestData.client_id,
-        status: action,
-        phase: "sketch",
-        p_status: "pending"
-      }).then(res => {
-          toast.success("Request Updated Successfully")				
-          const newRequests = requests.map(data => {
-            if (data.id === requestData.id) {
-              return requestData
-            }
-            return data;
-          });
-          setRequests(newRequests);
-        }).catch(err => {
-        let errors = err.response.data.errors
-        if(errors.length > 1) {
-          errors = errors.join("\n")	
+    toast.promise(
+      updateRequest(
+        {
+          "Authorization" : user.currentUser.token
+        },
+        {
+          request_id: requestData.id,
+          kind: requestData.kind,
+          price: requestData.price,
+          duration: requestData.duration,
+          image_url: requestData.image_url,
+          client_id: requestData.client_id,
+          status: action,
+          phase: "sketch",
+          p_status: "pending"
+        }).then(res => {		
+            const newRequests = requests.map(data => {
+              if (data.id === requestData.id) {
+                return requestData
+              }
+              return data;
+            });
+            setRequests(newRequests);
+          }).catch(err => {
+          let errors = err.response.data.errors
+          if(errors.length > 1) {
+            errors = errors.join("\n")	
+          }
+          throw errors
+        }),
+        {
+          loading: "Updating...",
+          success: "Updated Successfully",
+          error: (errors) => errors
         }
-        toast.error(errors)
-      })
+    )
+
   } 
   const handlePayment = (requestData) =>{
     requestData.payment_status = "paid"
-    updatePayment(
-      {
-        "Authorization" : user.currentUser.token,
-      },
-      {
-        request_id: requestData.id
-      }).then(res => {
-          toast.success("Payment updated Successfully")				
-          const newRequests = requests.map(data => {
-            if (data.id === requestData.id) {
-              return requestData
-            }
-            return data;
-          });
-          setRequests(newRequests);
-        }).catch(err => {
-        console.log(err)
-        let errors = err.response.data.errors
-        if(errors.length > 1) {
-          errors = errors.join("\n")	
+    toast.promise(
+      updatePayment(
+        {
+          "Authorization" : user.currentUser.token,
+        },
+        {
+          request_id: requestData.id
+        }).then(res => {
+            const newRequests = requests.map(data => {
+              if (data.id === requestData.id) {
+                return requestData
+              }
+              return data;
+            });
+            setRequests(newRequests);
+          }).catch(err => {
+          console.log(err)
+          let errors = err.response.data.errors
+          if(errors.length > 1) {
+            errors = errors.join("\n")	
+          }
+          throw errors
+        }),
+        {
+          loading: "Updating...",
+          success: "Updated Successfully",
+          error: (errors) => errors
         }
-        toast.error(errors)
-      })
+    )
+   
   }
   const handleSelectedRequest =(request) =>{
     sessionStorage.setItem("commission", JSON.stringify({data: request, type: "request"}));
@@ -167,7 +187,10 @@ const Requests = () => {
             </tr>
         </thead>
         <tbody className="mx-2 my-2">
-            { requests.map((request, index) => {
+          { isLoading ?
+            <TableCellsSkeleton count={8}/> 
+          :
+            requests.map((request, index) => {
               return (
                 <tr key={request.id} className="text-sm font-normal text-gray-900 whitespace-nowrap">
                   <td className="p-2">{index + 1}</td>
@@ -186,7 +209,8 @@ const Requests = () => {
                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                         <span className="ml-3 text-sm font-medium text-gray-900">{request.payment_status}</span>
                       </label>
-                   : request.payment_status
+                    : 
+                      request.payment_status
                     }
                   </td>
                   <td className="p-2"> {request.status}</td>
@@ -203,18 +227,18 @@ const Requests = () => {
                           <option value="cancelled">Cancel</option>
                           <option value="refund">Refund</option>
                         </select>  
-                      <Button onClick={() =>handleUpdate(request)}>Update</Button>
+                        <Button onClick={() =>handleUpdate(request)}>Update</Button>
                       </>
                     :
-                    request.status === "pending" && <Button color="failure" onClick={() =>handleCancel(request)}>Cancel</Button>
+                      request.status === "pending" && <Button color="failure" onClick={() =>handleCancel(request)}>Cancel</Button>
                     }
                   </td>
-                  
                 </tr>
-              )
-            })}
+              )}
+            )
+          }
         </tbody>
-    </table>
+      </table>
       <Toaster position="top-center" reverseOrder={false}/>
     </div>
 

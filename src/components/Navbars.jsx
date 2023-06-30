@@ -26,7 +26,7 @@ const Navbars = ({category}) => {
     <>
       <Navbar fluid rounded >
         <Navbar.Toggle />
-        <div className="flex md:order-2 gap-2 ">
+        <div className="flex md:order-2 gap-2">
           <Dropdown inline arrowIcon={false} label={
             <div className="flex p-2">
               <div className="relative w-8 h-8 overflow-hidden rounded bg-primary-50">
@@ -51,7 +51,7 @@ const Navbars = ({category}) => {
             </Dropdown.Item>
             {currentUser.role === "artist" &&
               <Dropdown.Item>
-                <NavLink to={`/${currentUser.username}`}>Manage My Page</NavLink>
+                <NavLink to={`${currentUser.username}`}>Manage My Page</NavLink>
               </Dropdown.Item>
             }
             <Dropdown.Item>

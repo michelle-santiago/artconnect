@@ -15,24 +15,30 @@ const Register = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		signUp({
-			first_name: user.firstName,
-			last_name: user.lastName,
-			username: user.userName,
-			email: user.emailAddress,
-			avatar: user.avatar,
-			password: user.password,
-			password_confirmation: user.confirmPassword,
-			role: user.role
-		}).then(res => {
-				toast.success("Sign Up Successful")				
-		}).catch(err => {
-			let errors = err.response.data.errors
-			if(errors.length > 1) {
-				errors = errors.join("\n")	
+		toast.promise(
+			signUp({
+				first_name: user.firstName,
+				last_name: user.lastName,
+				username: user.userName,
+				email: user.emailAddress,
+				avatar: user.avatar,
+				password: user.password,
+				password_confirmation: user.confirmPassword,
+				role: user.role
+			}).then(res => {	
+			}).catch(err => {
+				let errors = err.response.data.errors
+				if(errors.length > 1) {
+					errors = errors.join("\n")	
+				}
+				throw errors
+			}),
+			{
+				loading: "Signing up...",
+				success: "Sign up successful",
+				error: (errors) => errors
 			}
-			toast.error(errors)
-		})
+		)
 	}
 
 	const handleChange = (e) => {

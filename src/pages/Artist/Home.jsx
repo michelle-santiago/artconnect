@@ -17,6 +17,7 @@ const Home = () => {
   const [maxSlot, setMaxSlot] = useState("5")
   const [slotStatus, setSlotStatus] = useState("Open")
   const [showModal, setShowModal] = useState(false);
+  
   useEffect(() => {
     getArtist(
       {"Authorization" : user.currentUser.token}, username
@@ -97,13 +98,13 @@ const Home = () => {
                     } 
                   </h1>
                   <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-                      <NavLink to={`/${username}/commissions`} className="inline-flex border justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary-950 hover:bg-primary-800 focus:ring-4 focus:ring-blue-300">
-                          Check Commissions
-                          <svg aria-hidden="true" className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-                      </NavLink>
-                      <NavLink to={`/${username}/terms`} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100">
-                          Read Terms and conditions
-                      </NavLink>  
+                    <NavLink to={`/${username}/commissions`} className="inline-flex border justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary-950 hover:bg-primary-800 focus:ring-4 focus:ring-blue-300">
+                        Check Commissions
+                        <svg aria-hidden="true" className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+                    </NavLink>
+                    <NavLink to={`/${username}/terms`} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100">
+                        Read Terms and conditions
+                    </NavLink>  
                   </div>
               </div>
               <div>

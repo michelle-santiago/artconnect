@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Navbars from '../../components/Navbars'
-import { NavLink, Outlet } from 'react-router-dom'
 import { MessagesContext } from '../../utils/providers/MessagesProvider'
 import { getContacts } from '../../api/api'
 import { CurrentUserContext } from '../../utils/providers/CurrentUserProvider'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import MessagesRoom from './MessagesRoom'
+import Skeleton from 'react-loading-skeleton'
+
 const DirectMessages = () => {
   const { currentUser } = useContext(CurrentUserContext)
   const user = { currentUser }
   const [open, setOpen] = useState(false);
-  const { contacts, contact, updateContact, updateContacts, setContact} = useContext(MessagesContext)
-  
+  const { contacts, updateContact, updateContacts} = useContext(MessagesContext)
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(()=>{
     getContacts(
       {"Authorization" : user.currentUser.token}
     ).then((res) => {
+      setIsLoading(false)
       updateContacts(res.data)
 		})
 		.catch((err) => {
@@ -24,7 +27,6 @@ const DirectMessages = () => {
   },[])
 
   const handleContact= (contact) =>{
-    // setContact(contact)
     updateContact(contact)	
   }
   return (
@@ -51,25 +53,30 @@ const DirectMessages = () => {
           </div>
           <div className="pt-6">
             <ul>
-              {contacts.map((contact, index)=>{
-               return(
-                <li key={index}to="" className="flex pt-2 rounded-md cursor-pointer hover:bg-light-white text-primary-950 text-sm items-center gap-x-4 bg-light-white">
-                <button onClick={() => handleContact(contact)} className="cursor-pointer duration-500">
-                  {contact.avatar_url === null?
-                     <div className="relative w-10 h-10 overflow-hidden rounded-full bg-gray-500">
-                      <svg className="absolute w-12 h-12 text-primary-200 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
-                    </div>
-                  :
-                  <img className="w-10 h-10 rounded-full bg-gray-500" src={contact.avatar_url}/>
-                  }
-                  
-                </button>
-                <span className={`${!open && "hidden"} origin-left duration-200`}>
-                  {contact.first_name} {contact.last_name}
-                </span>
-              </li>
-               )   
-              })}
+              {isLoading ? 
+                <Skeleton circle count={5} height="40px" width="40px"/>
+              :
+                contacts.map((contact, index)=>{
+                  return(
+                    <li key={index}to="" className="flex pt-2 rounded-md cursor-pointer hover:bg-light-white text-primary-950 text-sm items-center gap-x-4 bg-light-white">
+                      <button onClick={() => handleContact(contact)} className="cursor-pointer duration-500">
+                        {contact.avatar_url === null?
+                            <div className="relative w-10 h-10 overflow-hidden rounded-full bg-gray-500">
+                            <svg className="absolute w-12 h-12 text-primary-200 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+                          </div>
+                        :
+                        <img className="w-10 h-10 rounded-full bg-gray-500" src={contact.avatar_url}/>
+                        }
+                        
+                      </button>
+                      <span className={`${!open && "hidden"} origin-left duration-200`}>
+                        {contact.first_name} {contact.last_name}
+                      </span>
+                    </li>
+                  )   
+                })
+              }
+           
             </ul>
           </div>
         </aside>
