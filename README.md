@@ -12,7 +12,7 @@
   <a href="#run-test">Run Test</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#libraries">Libraries</a> •
-  <a href="#for-improvements">For Improvements</a>
+  <a href="#for-improvements">For Improvements</a>  •
   <a href="#feedback">Feedback and Suggestions</a>
 </p>
 
@@ -107,6 +107,7 @@ Production Render
 ```
 ## Action Cable
 Redis for production. Add on render environment variables
+
 `REDIS_URL`
 
 ## Cors 
@@ -237,6 +238,6 @@ Backend
 - Archive / Delete features
 - Send media feature to messages
 
-## <a name="feedback">Feedback and Suggestions</a>
+## <a name='feedback'>Feedback and Suggestions</a>
 
-I would love to hear any feedback or suggestions to improve my project. If you have any feedback or suggestions, please reach out to me at mdcsantiago0@gmail.com. 
+I would love to hear any feedback or suggestions to improve my project. If you have any feedback or suggestions, please reach out to me at mdcsantiago0@gmail.com ❤️
