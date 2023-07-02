@@ -87,9 +87,9 @@ config/environments/production.rb
 
 
 ```bash
-CLOUDINARY_NAME="something"
-CLOUDINARY_API_KEY="something"
-CLOUDINARY_API_SECRET="something"
+CLOUDINARY_NAME = "something"
+CLOUDINARY_API_KEY = "something"
+CLOUDINARY_API_SECRET = "something"
 ```
 ## Database (PostgreSQL)
 
